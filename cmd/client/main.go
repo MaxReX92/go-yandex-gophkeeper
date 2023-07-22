@@ -51,8 +51,12 @@ func main() {
 }
 
 func buildCommands(ioStream io.CommandStream) cli.Command {
-	initialCommand := commands.NewInitialCommand(ioStream)
-	commands.NewStatusCommand(initialCommand, ioStream)
+	// credentials
+	credentialsListCommand := commands.NewCredentialsListCommand(ioStream, commands.NewHelpCommand())
+	credentialsCommand := commands.NewCredentialsCommand(ioStream, commands.NewHelpCommand(), credentialsListCommand)
 
-	return initialCommand
+	// status
+	statucCommand := commands.NewStatusCommand(ioStream, commands.NewHelpCommand())
+
+	return commands.NewInitialCommand(ioStream, commands.NewHelpCommand(), credentialsCommand, statucCommand)
 }

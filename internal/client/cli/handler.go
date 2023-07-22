@@ -25,6 +25,10 @@ func (h *handler) Start(ctx context.Context) error {
 	for {
 		select {
 		case message := <-readStream:
+			if message == "" {
+				continue
+			}
+
 			err := h.initialCommand.Invoke(strings.SplitN(message, " ", -1))
 			if err != nil {
 				return logger.WrapError("invoke command", err)

@@ -4,13 +4,13 @@ type Command interface {
 	Name() string
 	FullName() string
 	ShortDescription() string
-	AddChild(command Command)
+	SetParent(command Command)
 	Invoke(keys []string) error
+	ShowHelp()
 }
 
 type Argument interface {
-	FullName() string
-	ShortName() string
+	Keys() []string
 	Description() string
 	NextArgIsValue() bool
 }

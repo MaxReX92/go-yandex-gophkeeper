@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"fmt"
+
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
 )
@@ -17,21 +19,24 @@ type initialCommand struct {
 	*baseCommand
 }
 
-func NewInitialCommand(stream io.CommandStream) *initialCommand {
+func NewInitialCommand(stream io.CommandStream, children ...cli.Command) *initialCommand {
 	command := &initialCommand{}
 	command.baseCommand = newBaseCommand(
 		stream,
 		initialCommandName,
 		initialShortDescription,
 		initialFullDescription,
-		nil,
-		[]cli.Argument{},
+		children,
+		[]cli.Argument{
+			newArgument("View information about a command list", false, helpFullArgName, helpShortArgName),
+			newArgument("Show information about command line tool version", false, versionFullArgName),
+		},
 		command.invoke,
 	)
 	return command
 }
 
-func (c *initialCommand) invoke() error {
-
+func (c *initialCommand) invoke(map[string]string) error {
+	c.stream.Write(fmt.Sprintf("Unexpected command. See '%s help'.\n", c.FullName()))
 	return nil
 }

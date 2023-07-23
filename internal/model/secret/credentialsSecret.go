@@ -2,17 +2,17 @@ package secret
 
 import "github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 
-type credentialsSecret struct {
-	*baseSecret
+type CredentialsSecret struct {
+	*BaseSecret
 
-	userName string
-	password string
+	UserName string
+	Password string
 }
 
-func newCredentialsSecret(userName string, password string, identity string, comment string) *credentialsSecret {
-	return &credentialsSecret{
-		baseSecret: newBaseSecret(identity, model.Credentials, comment),
-		userName:   userName,
-		password:   password,
+func NewCredentialsSecret(userName string, password string, identity string, comment string) *CredentialsSecret {
+	return &CredentialsSecret{
+		BaseSecret: newBaseSecret(identity, model.Credentials, comment),
+		UserName:   userName,
+		Password:   password,
 	}
 }

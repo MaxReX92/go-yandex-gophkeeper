@@ -118,15 +118,19 @@ func (c *baseCommand) ShowHelp() {
 	c.stream.Write("\n\n")
 	c.stream.Write("Usage:\n")
 	c.stream.Write(fmt.Sprintf("\t%s", c.FullName()))
+
+	// TODO: ignore help command
+	childrenLen := len(c.children)
 	if len(c.children) > 0 {
 		c.stream.Write(fmt.Sprintf(" <command>"))
 	}
+
+	argsLen := len(c.args)
 	if len(c.args) > 0 {
 		c.stream.Write(fmt.Sprintf(" [arguments]"))
 	}
 	c.stream.Write("\n\n")
 
-	childrenLen := len(c.children)
 	if childrenLen > 0 {
 		c.stream.Write("The commands are:\n")
 		i := 0
@@ -145,7 +149,6 @@ func (c *baseCommand) ShowHelp() {
 		c.stream.Write("\n")
 	}
 
-	argsLen := len(c.args)
 	if argsLen > 0 {
 		c.stream.Write("The arguments are:\n")
 
@@ -159,7 +162,7 @@ func (c *baseCommand) ShowHelp() {
 		argsMap := make(map[cli.Argument]interface{})
 
 		for _, arg := range c.args {
-			keys := strings.Join(arg.Keys(), ", ")
+			keys := strings.Join(arg.Keys(), ",")
 			_, ok := argsMap[arg]
 			if !ok {
 				c.stream.Write(fmt.Sprintf("\t%s\t%s\n", keys, arg.Description()))

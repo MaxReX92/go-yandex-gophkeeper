@@ -2,15 +2,15 @@ package secret
 
 import "github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 
-type notesSecret struct {
-	*baseSecret
+type NotesSecret struct {
+	*BaseSecret
 
-	text string
+	Text string
 }
 
-func newNotesSecret(text string, identity string, comment string) *notesSecret {
-	return &notesSecret{
-		baseSecret: newBaseSecret(identity, model.Credentials, comment),
-		text:       text,
+func NewNotesSecret(text string, identity string, comment string) *NotesSecret {
+	return &NotesSecret{
+		BaseSecret: newBaseSecret(identity, model.Credentials, comment),
+		Text:       text,
 	}
 }

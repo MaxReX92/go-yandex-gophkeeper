@@ -5,6 +5,10 @@ import (
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/secret"
+	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
 const (
@@ -15,10 +19,13 @@ const (
 
 type credentialsListCommand struct {
 	*baseCommand
+	storage storage.LocalSecretsStorage
 }
 
-func NewCredentialsListCommand(stream io.CommandStream, children ...cli.Command) *credentialsListCommand {
-	command := &credentialsListCommand{}
+func NewCredentialsListCommand(stream io.CommandStream, storage storage.LocalSecretsStorage, children ...cli.Command) *credentialsListCommand {
+	command := &credentialsListCommand{
+		storage: storage,
+	}
 	command.baseCommand = newBaseCommand(
 		stream,
 		credentialsListCommandName,
@@ -37,18 +44,20 @@ func NewCredentialsListCommand(stream io.CommandStream, children ...cli.Command)
 func (c *credentialsListCommand) invoke(args map[string]string) error {
 	_, reveal := argValue(args, revealFullArgName, revealShortArgName)
 
-	// stub
-	for i := 0; i < 10; i++ {
-		value := "***"
-		if reveal {
-			value = fmt.Sprintf("secret value %v", i)
-		}
-
-		c.stream.Write(fmt.Sprintf("\tsecret name %v\t\t%s\n", i, value))
+	credentials, err := c.storage.GetAllSecrets(model.Credentials)
+	if err != nil {
+		return logger.WrapError("get secrets", err)
 	}
 
-	// storage.GetSecretsByType()
-	// c.stream.Write(...)
+	for _, modelCredentials := range credentials {
+		cred := modelCredentials.(*secret.CredentialsSecret)
+		value := "***"
+		if reveal {
+			value = cred.Password
+		}
+
+		c.stream.Write(fmt.Sprintf("\t%s\t\t%s\t\t%s\t\t%s", cred.GetIdentity(), cred.UserName, value, cred.GetComment()))
+	}
 
 	return nil
 }

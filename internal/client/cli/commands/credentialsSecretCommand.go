@@ -35,6 +35,6 @@ func NewCredentialsCommand(stream io.CommandStream, children ...cli.Command) *cr
 }
 
 func (c *credentialsCommand) invoke(map[string]string) error {
-	c.stream.Write(fmt.Sprintf("Unexpected command. See '%s help'.\n", c.FullName()))
+	c.stream.Write(fmt.Sprintf("Unexpected command arguments. See '%s help'.\n", c.FullName()))
 	return nil
 }

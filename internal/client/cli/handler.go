@@ -31,7 +31,7 @@ func (h *handler) Start(ctx context.Context) error {
 
 			err := h.initialCommand.Invoke(strings.SplitN(message, " ", -1))
 			if err != nil {
-				return logger.WrapError("invoke command", err)
+				h.ioStream.Write(logger.WrapError("invoke command", err).Error())
 			}
 		case <-ctx.Done():
 			logger.Info("stopping...")

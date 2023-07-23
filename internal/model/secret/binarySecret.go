@@ -2,15 +2,15 @@ package secret
 
 import "github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 
-type binarySecret struct {
-	*baseSecret
+type BinarySecret struct {
+	*BaseSecret
 
-	filePath string
+	FilePath string
 }
 
-func newBinarySecret(filePath string, identity string, comment string) *binarySecret {
-	return &binarySecret{
-		baseSecret: newBaseSecret(identity, model.Credentials, comment),
-		filePath:   filePath,
+func NewBinarySecret(filePath string, identity string, comment string) *BinarySecret {
+	return &BinarySecret{
+		BaseSecret: newBaseSecret(identity, model.Credentials, comment),
+		FilePath:   filePath,
 	}
 }

@@ -28,7 +28,6 @@ func NewInitialCommand(stream io.CommandStream, children ...cli.Command) *initia
 		initialFullDescription,
 		children,
 		[]cli.Argument{
-			newArgument("View information about a command list", false, helpFullArgName, helpShortArgName),
 			newArgument("Show information about command line tool version", false, versionFullArgName),
 		},
 		command.invoke,

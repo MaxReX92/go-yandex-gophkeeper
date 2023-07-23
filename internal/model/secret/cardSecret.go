@@ -6,19 +6,19 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 )
 
-type cardSecret struct {
-	*baseSecret
+type CardSecret struct {
+	*BaseSecret
 
-	number string
-	cvv    int32
-	valid  time.Time
+	Number string
+	CVV    int32
+	Valid  time.Time
 }
 
-func newCardSecret(number string, cvv int32, valid time.Time, identity string, comment string) *cardSecret {
-	return &cardSecret{
-		baseSecret: newBaseSecret(identity, model.Card, comment),
-		number:     number,
-		cvv:        cvv,
-		valid:      valid,
+func NewCardSecret(number string, cvv int32, valid time.Time, identity string, comment string) *CardSecret {
+	return &CardSecret{
+		BaseSecret: newBaseSecret(identity, model.Card, comment),
+		Number:     number,
+		CVV:        cvv,
+		Valid:      valid,
 	}
 }

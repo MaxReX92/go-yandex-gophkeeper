@@ -7,7 +7,11 @@ import (
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli/commands"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/generator"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/generator/rand"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage/memory"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/runner"
 )
@@ -29,7 +33,10 @@ func main() {
 
 	// build app
 	ioStream := io.NewIOStream(os.Stdin, os.Stdout)
-	initialCommand := buildCommands(ioStream)
+	randomGenerator := rand.NewGenerator()
+	memoryStorage := memory.NewStorage()
+
+	initialCommand := buildCommands(ioStream, randomGenerator, memoryStorage)
 	handler := cli.NewHandler(ioStream, initialCommand)
 	app := runner.NewGracefulRunner(handler)
 
@@ -50,13 +57,25 @@ func main() {
 	}
 }
 
-func buildCommands(ioStream io.CommandStream) cli.Command {
+func buildCommands(
+	ioStream io.CommandStream,
+	generator generator.Generator,
+	storage storage.LocalSecretsStorage,
+) cli.Command {
 	// credentials
-	credentialsListCommand := commands.NewCredentialsListCommand(ioStream, commands.NewHelpCommand())
-	credentialsCommand := commands.NewCredentialsCommand(ioStream, commands.NewHelpCommand(), credentialsListCommand)
+	credentialsAddCommand := commands.NewCredentialsAddCommand(ioStream, generator, storage, commands.NewHelpCommand())
+	credentialsListCommand := commands.NewCredentialsListCommand(ioStream, storage, commands.NewHelpCommand())
+	credentialsRemoveCommand := commands.NewCredentialsRemoveCommand(ioStream, storage, commands.NewHelpCommand())
+	credentialsCommand := commands.NewCredentialsCommand(
+		ioStream,
+		commands.NewHelpCommand(),
+		credentialsAddCommand,
+		credentialsListCommand,
+		credentialsRemoveCommand,
+	)
 
 	// status
-	statucCommand := commands.NewStatusCommand(ioStream, commands.NewHelpCommand())
+	statusCommand := commands.NewStatusCommand(ioStream, commands.NewHelpCommand())
 
-	return commands.NewInitialCommand(ioStream, commands.NewHelpCommand(), credentialsCommand, statucCommand)
+	return commands.NewInitialCommand(ioStream, commands.NewHelpCommand(), credentialsCommand, statusCommand)
 }

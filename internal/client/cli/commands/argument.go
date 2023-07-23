@@ -1,13 +1,22 @@
 package commands
 
 const (
+	allFullArgName      = "--all"
+	commentFullArgName  = "--comment"
+	commentShortArgName = "-c"
 	helpFullArgName     = "--help"
 	helpShortArgName    = "-h"
+	idFullArgName       = "--identity"
+	idShortArgName      = "-id"
+	passFullArgName     = "--password"
+	passShortArgName    = "-p"
 	revealFullArgName   = "--reveal"
 	revealShortArgName  = "-r"
 	verboseFullArgName  = "--verbose"
 	verboseShortArgName = "-v"
 	versionFullArgName  = "--version"
+	userFullArgName     = "--user"
+	userShortArgName    = "-u"
 )
 
 type argument struct {

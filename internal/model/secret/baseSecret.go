@@ -5,12 +5,12 @@ import "github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 type BaseSecret struct {
 	identity   string
 	secretType model.SecretType
-	comment    string
+	Comment    string
 }
 
 func newBaseSecret(identity string, secretType model.SecretType, comment string) *BaseSecret {
 	return &BaseSecret{
-		comment:    comment,
+		Comment:    comment,
 		identity:   identity,
 		secretType: secretType,
 	}
@@ -25,5 +25,5 @@ func (s *BaseSecret) GetType() model.SecretType {
 }
 
 func (s *BaseSecret) GetComment() string {
-	return s.comment
+	return s.Comment
 }

@@ -3,6 +3,9 @@ package parser
 import (
 	"fmt"
 	"strconv"
+	"time"
+
+	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
 // ToFloat64 parse strings to float64.
@@ -38,4 +41,13 @@ func Int32ToString(num int32) string {
 // IntToString convert int64 to string.
 func Int64ToString(num int64) string {
 	return strconv.FormatInt(num, 10)
+}
+
+func ToTime(str string) (time.Time, error) {
+	result, err := time.Parse("01/06", str)
+	if err != nil {
+		return result, logger.WrapError("parse time value", ErrInvalidFormat)
+	}
+
+	return result, nil
 }

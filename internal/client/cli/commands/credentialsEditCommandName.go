@@ -13,8 +13,8 @@ import (
 
 const (
 	credentialsEditCommandName      = "edit"
-	credentialsEditShortDescription = "edit credential to store"
-	credentialsEditFullDescription  = "Edit new credential to secure store,"
+	credentialsEditShortDescription = "edit credential from store"
+	credentialsEditFullDescription  = "Edit credential from secure store,"
 )
 
 type credentialsEditCommand struct {

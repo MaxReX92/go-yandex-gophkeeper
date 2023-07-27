@@ -2,10 +2,10 @@ package parser_test
 
 import (
 	"testing"
+	"time"
 
+	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/parser"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/MaxReX92/go-yandex-aka-prometheus/internal/parser"
 )
 
 func TestToFloat64(t *testing.T) {
@@ -213,7 +213,48 @@ func TestIntToString(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.expected, parser.IntToString(tt.value))
+			assert.Equal(t, tt.expected, parser.Int64ToString(tt.value))
+		})
+	}
+}
+
+func TestToTime(t *testing.T) {
+	tests := []struct {
+		name          string
+		value         string
+		expected      time.Time
+		expectedError error
+	}{
+		{
+			name:          "notADate",
+			value:         "test",
+			expectedError: parser.ErrInvalidFormat,
+		},
+		{
+			name:          "nowTime",
+			value:         time.Now().String(),
+			expectedError: parser.ErrInvalidFormat,
+		},
+		{
+			name:          "fullYear",
+			value:         "03/2026",
+			expectedError: parser.ErrInvalidFormat,
+		},
+		{
+			name:     "shortYear",
+			value:    "03/26",
+			expected: time.Date(2026, time.March, 1, 0, 0, 0, 0, time.UTC),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual, actualError := parser.ToTime(tt.value)
+			if tt.expectedError == nil {
+				assert.Equal(t, tt.expected, actual)
+			}
+
+			assert.ErrorIs(t, actualError, tt.expectedError)
 		})
 	}
 }

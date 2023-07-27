@@ -35,7 +35,6 @@ func NewCardListCommand(stream io.CommandStream, storage storage.LocalSecretsSto
 		children,
 		[]cli.Argument{
 			newArgument("Reveal secret values", false, revealFullArgName, revealShortArgName),
-			newArgument("Show full secret info", false, verboseFullArgName, verboseShortArgName),
 		},
 		command.invoke,
 	)

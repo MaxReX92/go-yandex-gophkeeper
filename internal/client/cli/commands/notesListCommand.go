@@ -12,25 +12,25 @@ import (
 )
 
 const (
-	credentialsListCommandName      = "list"
-	credentialsListShortDescription = "list of all credentials"
-	credentialsListFullDescription  = "Command list all stored credentials,"
+	notesListCommandName      = "list"
+	notesListShortDescription = "list of all notes"
+	notesListFullDescription  = "Command list all stored notes."
 )
 
-type credentialsListCommand struct {
+type notesListCommand struct {
 	*baseCommand
 	storage storage.LocalSecretsStorage
 }
 
-func NewCredentialsListCommand(stream io.CommandStream, storage storage.LocalSecretsStorage, children ...cli.Command) *credentialsListCommand {
-	command := &credentialsListCommand{
+func NewNotesListCommand(stream io.CommandStream, storage storage.LocalSecretsStorage, children ...cli.Command) *notesListCommand {
+	command := &notesListCommand{
 		storage: storage,
 	}
 	command.baseCommand = newBaseCommand(
 		stream,
-		credentialsListCommandName,
-		credentialsListShortDescription,
-		credentialsListFullDescription,
+		notesListCommandName,
+		notesListShortDescription,
+		notesListFullDescription,
 		children,
 		[]cli.Argument{
 			newArgument("Reveal secret values", false, revealFullArgName, revealShortArgName),
@@ -40,22 +40,22 @@ func NewCredentialsListCommand(stream io.CommandStream, storage storage.LocalSec
 	return command
 }
 
-func (c *credentialsListCommand) invoke(args map[string]string) error {
+func (c *notesListCommand) invoke(args map[string]string) error {
 	_, reveal := argValue(args, revealFullArgName, revealShortArgName)
 
-	credentials, err := c.storage.GetAllSecrets(model.Credentials)
+	notess, err := c.storage.GetAllSecrets(model.Notes)
 	if err != nil {
 		return logger.WrapError("get secrets", err)
 	}
 
-	for _, modelCredentials := range credentials {
-		cred := modelCredentials.(*secret.CredentialsSecret)
+	for _, modelNotes := range notess {
+		notes := modelNotes.(*secret.NotesSecret)
 		value := "***"
 		if reveal {
-			value = cred.Password
+			value = notes.Text
 		}
 
-		c.stream.Write(fmt.Sprintf("\t%s\t\t%s\t\t%s\t\t%s", cred.GetIdentity(), cred.UserName, value, cred.GetComment()))
+		c.stream.Write(fmt.Sprintf("\t%s\t\t%s\t\t%s", notes.GetIdentity(), value, notes.GetComment()))
 	}
 
 	return nil

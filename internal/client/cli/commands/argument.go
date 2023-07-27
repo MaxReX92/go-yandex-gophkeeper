@@ -15,6 +15,8 @@ const (
 	numShortArgName       = "-n"
 	revealFullArgName     = "--reveal"
 	revealShortArgName    = "-r"
+	textFullArgName       = "--text"
+	textShortArgName      = "-t"
 	validThruFullArgName  = "--validThru"
 	validThruShortArgName = "-v"
 	verboseFullArgName    = "--verbose"

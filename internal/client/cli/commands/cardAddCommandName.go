@@ -77,12 +77,12 @@ func (c *cardAddCommand) invoke(args map[string]string) error {
 	if !ok {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: cvv value is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
-
-	comment, _ := argValue(args, commentFullArgName, commentShortArgName)
 	cvv, err := parser.ToInt32(cvvArg)
 	if err != nil {
 		return logger.WrapError("parse cvv value", err)
 	}
+
+	comment, _ := argValue(args, commentFullArgName, commentShortArgName)
 
 	card := secret.NewCardSecret(number, cvv, valid, c.generator.GenerateNewIdentity(), comment)
 	logger.InfoFormat("Add %s card", number)

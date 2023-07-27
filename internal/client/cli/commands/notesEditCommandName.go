@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
@@ -11,42 +10,39 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/secret"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
-	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/parser"
 )
 
 const (
-	cardEditCommandName      = "edit"
-	cardEditShortDescription = "edit card from store"
-	cardEditFullDescription  = "Edit card from secure store,"
+	notesEditCommandName      = "edit"
+	notesEditShortDescription = "edit notes from store"
+	notesEditFullDescription  = "Edit new notes from secure store,"
 )
 
-type cardEditCommand struct {
+type notesEditCommand struct {
 	*baseCommand
 	generator generator.Generator
 	storage   storage.LocalSecretsStorage
 }
 
-func NewCardEditCommand(
+func NewNotesEditCommand(
 	stream io.CommandStream,
 	generator generator.Generator,
 	storage storage.LocalSecretsStorage,
 	children ...cli.Command,
-) *cardEditCommand {
-	command := &cardEditCommand{
+) *notesEditCommand {
+	command := &notesEditCommand{
 		generator: generator,
 		storage:   storage,
 	}
 	command.baseCommand = newBaseCommand(
 		stream,
-		cardEditCommandName,
-		cardEditShortDescription,
-		cardEditFullDescription,
+		notesEditCommandName,
+		notesEditShortDescription,
+		notesEditFullDescription,
 		children,
 		[]cli.Argument{
 			newArgument("Secret identity", true, initialFullDescription, initialShortDescription),
-			newArgument("Card number", true, numFullArgName, numShortArgName),
-			newArgument("CVV", true, cvvFullArgName),
-			newArgument("Valid thru date (MM/YY)", true, validThruFullArgName, validThruShortArgName),
+			newArgument("Note text", true, textFullArgName, textShortArgName),
 			newArgument("Comment", true, commentFullArgName, commentShortArgName),
 		},
 		command.invoke,
@@ -54,62 +50,38 @@ func NewCardEditCommand(
 	return command
 }
 
-func (c *cardEditCommand) invoke(args map[string]string) error {
+func (c *notesEditCommand) invoke(args map[string]string) error {
 	identity, ok := argValue(args, idFullArgName, idShortArgName)
 	if !ok {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	currentCard, err := c.storage.GetSecretById(model.Card, identity)
+	currentNotes, err := c.storage.GetSecretById(model.Notes, identity)
 	if err != nil {
 		return logger.WrapError("get secret", err)
 	}
 
-	if currentCard == nil {
+	if currentNotes == nil {
 		return logger.WrapError("edit secret", cli.ErrSecretNotFound)
 	}
 
-	card, ok := currentCard.(*secret.CardSecret)
+	notes, ok := currentNotes.(*secret.NotesSecret)
 	if !ok {
 		return logger.WrapError("edit secret", cli.ErrInvalidSecretType)
 	}
 
-	number, ok := argValue(args, numFullArgName, numShortArgName)
+	text, ok := argValue(args, textFullArgName, textShortArgName)
 	if ok {
-		card.Number = number
-	}
-
-	validThru, ok := argValue(args, validThruFullArgName, validThruShortArgName)
-	if ok {
-		valid, err := parser.ToTime(validThru)
-		if err != nil {
-			if errors.Is(err, parser.ErrInvalidFormat) {
-				c.stream.Write("Invalid valid thru value format, see help command for more details")
-				return nil
-			} else {
-				return logger.WrapError("parse valid thru value", err)
-			}
-		}
-
-		card.Valid = valid
-	}
-
-	cvvArg, ok := argValue(args, cvvFullArgName)
-	if ok {
-		cvv, err := parser.ToInt32(cvvArg)
-		if err != nil {
-			return logger.WrapError("parse cvv value", err)
-		}
-		card.CVV = cvv
+		notes.Text = text
 	}
 
 	comment, ok := argValue(args, commentFullArgName, commentShortArgName)
 	if ok {
-		card.Comment = comment
+		notes.Comment = comment
 	}
 
-	logger.InfoFormat("Edit %s card", number)
-	err = c.storage.ChangeSecret(card)
+	logger.Info("Edit note")
+	err = c.storage.ChangeSecret(notes)
 	if err != nil {
 		return logger.WrapError("edit secret", err)
 	}

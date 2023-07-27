@@ -37,6 +37,7 @@ func NewCredentialsEditCommand(
 		credentialsEditFullDescription,
 		children,
 		[]cli.Argument{
+			newArgument("Secret identity", true, initialFullDescription, initialShortDescription),
 			newArgument("User name", true, userFullArgName, userShortArgName),
 			newArgument("Password", true, passFullArgName, passShortArgName),
 			newArgument("Comment", true, commentFullArgName, commentShortArgName),

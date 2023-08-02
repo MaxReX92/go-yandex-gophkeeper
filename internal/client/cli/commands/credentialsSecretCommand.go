@@ -8,25 +8,25 @@ import (
 )
 
 const (
-	credentialsCommandName      = "cred"
-	credentialsShortDescription = "work with user credential secrets"
-	credentialsFullDescription  = "" +
-		"System provide functionality for storing various user credentials data,\n" +
+	credentialCommandName      = "cred"
+	credentialShortDescription = "work with user credential secrets"
+	credentialFullDescription  = "" +
+		"System provide functionality for storing various user credential data,\n" +
 		"such as login, password, token, etc.\n" +
-		"'Cred' command helps to work with stored credentials list."
+		"'Cred' command helps to work with stored credential list."
 )
 
-type credentialsCommand struct {
+type credentialCommand struct {
 	*baseCommand
 }
 
-func NewCredentialsCommand(stream io.CommandStream, children ...cli.Command) *credentialsCommand {
-	command := &credentialsCommand{}
+func NewCredentialCommand(stream io.CommandStream, children ...cli.Command) *credentialCommand {
+	command := &credentialCommand{}
 	command.baseCommand = newBaseCommand(
 		stream,
-		credentialsCommandName,
-		credentialsShortDescription,
-		credentialsFullDescription,
+		credentialCommandName,
+		credentialShortDescription,
+		credentialFullDescription,
 		children,
 		nil,
 		command.invoke,
@@ -34,7 +34,7 @@ func NewCredentialsCommand(stream io.CommandStream, children ...cli.Command) *cr
 	return command
 }
 
-func (c *credentialsCommand) invoke(map[string]string) error {
+func (c *credentialCommand) invoke(map[string]string) error {
 	c.stream.Write(fmt.Sprintf("Unexpected command arguments. See '%s help'.\n", c.FullName()))
 	return nil
 }

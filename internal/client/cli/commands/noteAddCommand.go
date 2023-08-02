@@ -12,32 +12,32 @@ import (
 )
 
 const (
-	notesAddCommandName      = "add"
-	notesAddShortDescription = "add notes to store"
-	notesAddFullDescription  = "Add new notes to secure store,"
+	noteAddCommandName      = "add"
+	noteAddShortDescription = "add note to store"
+	noteAddFullDescription  = "Add new note to secure store,"
 )
 
-type notesAddCommand struct {
+type noteAddCommand struct {
 	*baseCommand
 	generator generator.Generator
 	storage   storage.LocalSecretsStorage
 }
 
-func NewNotesAddCommand(
+func NewNoteAddCommand(
 	stream io.CommandStream,
 	generator generator.Generator,
 	storage storage.LocalSecretsStorage,
 	children ...cli.Command,
-) *notesAddCommand {
-	command := &notesAddCommand{
+) *noteAddCommand {
+	command := &noteAddCommand{
 		generator: generator,
 		storage:   storage,
 	}
 	command.baseCommand = newBaseCommand(
 		stream,
-		notesAddCommandName,
-		notesAddShortDescription,
-		notesAddFullDescription,
+		noteAddCommandName,
+		noteAddShortDescription,
+		noteAddFullDescription,
 		children,
 		[]cli.Argument{
 			newArgument("Note text", true, textFullArgName, textShortArgName),
@@ -48,17 +48,17 @@ func NewNotesAddCommand(
 	return command
 }
 
-func (c *notesAddCommand) invoke(args map[string]string) error {
+func (c *noteAddCommand) invoke(args map[string]string) error {
 	text, ok := argValue(args, textFullArgName, textShortArgName)
 	if !ok {
-		return logger.WrapError(fmt.Sprintf("invoke %s command: note text is missed", c.name), cli.ErrRequiredArgNotFound)
+		return logger.WrapError(fmt.Sprintf("invoke %s command: note texttext is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
 	comment, _ := argValue(args, commentFullArgName, commentShortArgName)
 
-	notes := secret.NewNotesSecret(text, c.generator.GenerateNewIdentity(), comment)
-	logger.InfoFormat("Add %s notes", notes.Text)
-	err := c.storage.AddSecret(notes)
+	note := secret.NewNoteSecret(text, c.generator.GenerateNewIdentity(), comment)
+	logger.InfoFormat("Add %s note", note.Text)
+	err := c.storage.AddSecret(note)
 	if err != nil {
 		return logger.WrapError("add secret", err)
 	}

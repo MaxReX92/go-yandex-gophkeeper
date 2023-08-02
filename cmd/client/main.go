@@ -62,20 +62,20 @@ func buildCommands(
 	generator generator.Generator,
 	storage storage.LocalSecretsStorage,
 ) cli.Command {
-	// credentials
-	credentialsAddCommand := commands.NewCredentialsAddCommand(ioStream, generator, storage, commands.NewHelpCommand())
-	credentialsListCommand := commands.NewCredentialsListCommand(ioStream, storage, commands.NewHelpCommand())
-	credentialsRemoveCommand := commands.NewCredentialsRemoveCommand(ioStream, storage, commands.NewHelpCommand())
-	credentialsCommand := commands.NewCredentialsCommand(
+	// credential
+	credentialAddCommand := commands.NewCredentialAddCommand(ioStream, generator, storage, commands.NewHelpCommand())
+	credentialListCommand := commands.NewCredentialListCommand(ioStream, storage, commands.NewHelpCommand())
+	credentialRemoveCommand := commands.NewCredentialRemoveCommand(ioStream, storage, commands.NewHelpCommand())
+	credentialCommand := commands.NewCredentialCommand(
 		ioStream,
 		commands.NewHelpCommand(),
-		credentialsAddCommand,
-		credentialsListCommand,
-		credentialsRemoveCommand,
+		credentialAddCommand,
+		credentialListCommand,
+		credentialRemoveCommand,
 	)
 
 	// status
 	statusCommand := commands.NewStatusCommand(ioStream, commands.NewHelpCommand())
 
-	return commands.NewInitialCommand(ioStream, commands.NewHelpCommand(), credentialsCommand, statusCommand)
+	return commands.NewInitialCommand(ioStream, commands.NewHelpCommand(), credentialCommand, statusCommand)
 }

@@ -12,25 +12,25 @@ import (
 )
 
 const (
-	credentialsListCommandName      = "list"
-	credentialsListShortDescription = "list of all credentials"
-	credentialsListFullDescription  = "Command list all stored credentials,"
+	credentialListCommandName      = "list"
+	credentialListShortDescription = "list of all credential"
+	credentialListFullDescription  = "Command list all stored credential,"
 )
 
-type credentialsListCommand struct {
+type credentialListCommand struct {
 	*baseCommand
 	storage storage.LocalSecretsStorage
 }
 
-func NewCredentialsListCommand(stream io.CommandStream, storage storage.LocalSecretsStorage, children ...cli.Command) *credentialsListCommand {
-	command := &credentialsListCommand{
+func NewCredentialListCommand(stream io.CommandStream, storage storage.LocalSecretsStorage, children ...cli.Command) *credentialListCommand {
+	command := &credentialListCommand{
 		storage: storage,
 	}
 	command.baseCommand = newBaseCommand(
 		stream,
-		credentialsListCommandName,
-		credentialsListShortDescription,
-		credentialsListFullDescription,
+		credentialListCommandName,
+		credentialListShortDescription,
+		credentialListFullDescription,
 		children,
 		[]cli.Argument{
 			newArgument("Reveal secret values", false, revealFullArgName, revealShortArgName),
@@ -40,16 +40,16 @@ func NewCredentialsListCommand(stream io.CommandStream, storage storage.LocalSec
 	return command
 }
 
-func (c *credentialsListCommand) invoke(args map[string]string) error {
+func (c *credentialListCommand) invoke(args map[string]string) error {
 	_, reveal := argValue(args, revealFullArgName, revealShortArgName)
 
-	credentials, err := c.storage.GetAllSecrets(model.Credentials)
+	credential, err := c.storage.GetAllSecrets(model.Credential)
 	if err != nil {
 		return logger.WrapError("get secrets", err)
 	}
 
-	for _, modelCredentials := range credentials {
-		cred := modelCredentials.(*secret.CredentialsSecret)
+	for _, modelCredential := range credential {
+		cred := modelCredential.(*secret.CredentialSecret)
 		value := "***"
 		if reveal {
 			value = cred.Password

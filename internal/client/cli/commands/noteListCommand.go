@@ -12,25 +12,25 @@ import (
 )
 
 const (
-	notesListCommandName      = "list"
-	notesListShortDescription = "list of all notes"
-	notesListFullDescription  = "Command list all stored notes."
+	noteListCommandName      = "list"
+	noteListShortDescription = "list of all note"
+	noteListFullDescription  = "Command list all stored note."
 )
 
-type notesListCommand struct {
+type noteListCommand struct {
 	*baseCommand
 	storage storage.LocalSecretsStorage
 }
 
-func NewNotesListCommand(stream io.CommandStream, storage storage.LocalSecretsStorage, children ...cli.Command) *notesListCommand {
-	command := &notesListCommand{
+func NewNoteListCommand(stream io.CommandStream, storage storage.LocalSecretsStorage, children ...cli.Command) *noteListCommand {
+	command := &noteListCommand{
 		storage: storage,
 	}
 	command.baseCommand = newBaseCommand(
 		stream,
-		notesListCommandName,
-		notesListShortDescription,
-		notesListFullDescription,
+		noteListCommandName,
+		noteListShortDescription,
+		noteListFullDescription,
 		children,
 		[]cli.Argument{
 			newArgument("Reveal secret values", false, revealFullArgName, revealShortArgName),
@@ -40,22 +40,22 @@ func NewNotesListCommand(stream io.CommandStream, storage storage.LocalSecretsSt
 	return command
 }
 
-func (c *notesListCommand) invoke(args map[string]string) error {
+func (c *noteListCommand) invoke(args map[string]string) error {
 	_, reveal := argValue(args, revealFullArgName, revealShortArgName)
 
-	notess, err := c.storage.GetAllSecrets(model.Notes)
+	notes, err := c.storage.GetAllSecrets(model.Note)
 	if err != nil {
 		return logger.WrapError("get secrets", err)
 	}
 
-	for _, modelNotes := range notess {
-		notes := modelNotes.(*secret.NotesSecret)
+	for _, modelNote := range notes {
+		note := modelNote.(*secret.NoteSecret)
 		value := "***"
 		if reveal {
-			value = notes.Text
+			value = note.Text
 		}
 
-		c.stream.Write(fmt.Sprintf("\t%s\t\t%s\t\t%s", notes.GetIdentity(), value, notes.GetComment()))
+		c.stream.Write(fmt.Sprintf("\t%s\t\t%s\t\t%s", note.GetIdentity(), value, note.GetComment()))
 	}
 
 	return nil

@@ -12,32 +12,32 @@ import (
 )
 
 const (
-	notesRemoveCommandName      = "remove"
-	notesRemoveShortDescription = "remove notes from store"
-	notesRemoveFullDescription  = "Remove notes from secure store,"
+	noteRemoveCommandName      = "remove"
+	noteRemoveShortDescription = "remove note from store"
+	noteRemoveFullDescription  = "Remove note from secure store,"
 )
 
-type notesRemoveCommand struct {
+type noteRemoveCommand struct {
 	*baseCommand
 	storage storage.LocalSecretsStorage
 }
 
-func NewNotesRemoveCommand(
+func NewNoteRemoveCommand(
 	stream io.CommandStream,
 	storage storage.LocalSecretsStorage,
 	children ...cli.Command,
-) *notesRemoveCommand {
-	command := &notesRemoveCommand{
+) *noteRemoveCommand {
+	command := &noteRemoveCommand{
 		storage: storage,
 	}
 	command.baseCommand = newBaseCommand(
 		stream,
-		notesRemoveCommandName,
-		notesRemoveShortDescription,
-		notesRemoveFullDescription,
+		noteRemoveCommandName,
+		noteRemoveShortDescription,
+		noteRemoveFullDescription,
 		children,
 		[]cli.Argument{
-			newArgument("Remove all notes secrets", false, allFullArgName),
+			newArgument("Remove all note secrets", false, allFullArgName),
 			newArgument("Secret identity", true, idFullArgName, idShortArgName),
 		},
 		command.invoke,
@@ -45,17 +45,17 @@ func NewNotesRemoveCommand(
 	return command
 }
 
-func (c *notesRemoveCommand) invoke(args map[string]string) error {
-	var toRemove []*secret.NotesSecret
+func (c *noteRemoveCommand) invoke(args map[string]string) error {
+	var toRemove []*secret.NoteSecret
 	_, removeAll := argValue(args, allFullArgName)
 	if removeAll {
-		notes, err := c.storage.GetAllSecrets(model.Notes)
+		note, err := c.storage.GetAllSecrets(model.Note)
 		if err != nil {
 			return logger.WrapError("get all secrets", err)
 		}
 
-		for _, note := range notes {
-			toRemove = append(toRemove, note.(*secret.NotesSecret))
+		for _, note := range note {
+			toRemove = append(toRemove, note.(*secret.NoteSecret))
 		}
 
 	} else {
@@ -64,17 +64,17 @@ func (c *notesRemoveCommand) invoke(args map[string]string) error {
 			return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 		}
 
-		notes, err := c.storage.GetSecretById(model.Notes, identity)
+		note, err := c.storage.GetSecretById(model.Note, identity)
 		if err != nil {
 			return logger.WrapError("get secret", err)
 		}
 
-		toRemove = append(toRemove, notes.(*secret.NotesSecret))
+		toRemove = append(toRemove, note.(*secret.NoteSecret))
 	}
 
-	for _, notes := range toRemove {
-		logger.InfoFormat("Remove %s notes", notes.GetIdentity())
-		err := c.storage.RemoveSecret(notes)
+	for _, note := range toRemove {
+		logger.InfoFormat("Remove %s note", note.GetIdentity())
+		err := c.storage.RemoveSecret(note)
 		if err != nil {
 			return logger.WrapError("get secret", err)
 		}

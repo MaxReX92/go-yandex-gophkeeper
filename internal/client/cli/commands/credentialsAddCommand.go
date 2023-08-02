@@ -12,32 +12,32 @@ import (
 )
 
 const (
-	credentialsAddCommandName      = "add"
-	credentialsAddShortDescription = "add credential to store"
-	credentialsAddFullDescription  = "Add new credential to secure store,"
+	credentialAddCommandName      = "add"
+	credentialAddShortDescription = "add credential to store"
+	credentialAddFullDescription  = "Add new credential to secure store,"
 )
 
-type credentialsAddCommand struct {
+type credentialAddCommand struct {
 	*baseCommand
 	generator generator.Generator
 	storage   storage.LocalSecretsStorage
 }
 
-func NewCredentialsAddCommand(
+func NewCredentialAddCommand(
 	stream io.CommandStream,
 	generator generator.Generator,
 	storage storage.LocalSecretsStorage,
 	children ...cli.Command,
-) *credentialsAddCommand {
-	command := &credentialsAddCommand{
+) *credentialAddCommand {
+	command := &credentialAddCommand{
 		generator: generator,
 		storage:   storage,
 	}
 	command.baseCommand = newBaseCommand(
 		stream,
-		credentialsAddCommandName,
-		credentialsAddShortDescription,
-		credentialsAddFullDescription,
+		credentialAddCommandName,
+		credentialAddShortDescription,
+		credentialAddFullDescription,
 		children,
 		[]cli.Argument{
 			newArgument("User name", true, userFullArgName, userShortArgName),
@@ -49,7 +49,7 @@ func NewCredentialsAddCommand(
 	return command
 }
 
-func (c *credentialsAddCommand) invoke(args map[string]string) error {
+func (c *credentialAddCommand) invoke(args map[string]string) error {
 	userName, ok := argValue(args, userFullArgName, userShortArgName)
 	if !ok {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: user name is missed", c.name), cli.ErrRequiredArgNotFound)
@@ -61,7 +61,7 @@ func (c *credentialsAddCommand) invoke(args map[string]string) error {
 	}
 
 	comment, _ := argValue(args, commentFullArgName, commentShortArgName)
-	cred := secret.NewCredentialsSecret(userName, password, c.generator.GenerateNewIdentity(), comment)
+	cred := secret.NewCredentialSecret(userName, password, c.generator.GenerateNewIdentity(), comment)
 
 	logger.InfoFormat("Add %s %s credential", userName, password)
 	err := c.storage.AddSecret(cred)

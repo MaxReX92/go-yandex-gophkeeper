@@ -10,7 +10,7 @@ type BinarySecret struct {
 
 func NewBinarySecret(filePath string, identity string, comment string) *BinarySecret {
 	return &BinarySecret{
-		BaseSecret: newBaseSecret(identity, model.Credentials, comment),
+		BaseSecret: newBaseSecret(identity, model.Credential, comment),
 		FilePath:   filePath,
 	}
 }

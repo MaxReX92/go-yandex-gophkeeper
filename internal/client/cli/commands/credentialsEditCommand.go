@@ -12,29 +12,29 @@ import (
 )
 
 const (
-	credentialsEditCommandName      = "edit"
-	credentialsEditShortDescription = "edit credential from store"
-	credentialsEditFullDescription  = "Edit credential from secure store,"
+	credentialEditCommandName      = "edit"
+	credentialEditShortDescription = "edit credential from store"
+	credentialEditFullDescription  = "Edit credential from secure store,"
 )
 
-type credentialsEditCommand struct {
+type credentialEditCommand struct {
 	*baseCommand
 	storage storage.LocalSecretsStorage
 }
 
-func NewCredentialsEditCommand(
+func NewCredentialEditCommand(
 	stream io.CommandStream,
 	storage storage.LocalSecretsStorage,
 	children ...cli.Command,
-) *credentialsEditCommand {
-	command := &credentialsEditCommand{
+) *credentialEditCommand {
+	command := &credentialEditCommand{
 		storage: storage,
 	}
 	command.baseCommand = newBaseCommand(
 		stream,
-		credentialsEditCommandName,
-		credentialsEditShortDescription,
-		credentialsEditFullDescription,
+		credentialEditCommandName,
+		credentialEditShortDescription,
+		credentialEditFullDescription,
 		children,
 		[]cli.Argument{
 			newArgument("Secret identity", true, initialFullDescription, initialShortDescription),
@@ -47,13 +47,13 @@ func NewCredentialsEditCommand(
 	return command
 }
 
-func (c *credentialsEditCommand) invoke(args map[string]string) error {
+func (c *credentialEditCommand) invoke(args map[string]string) error {
 	identity, ok := argValue(args, idFullArgName, idShortArgName)
 	if !ok {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	currentCred, err := c.storage.GetSecretById(model.Credentials, identity)
+	currentCred, err := c.storage.GetSecretById(model.Credential, identity)
 	if err != nil {
 		return logger.WrapError("get secret", err)
 	}
@@ -62,7 +62,7 @@ func (c *credentialsEditCommand) invoke(args map[string]string) error {
 		return logger.WrapError("edit secret", cli.ErrSecretNotFound)
 	}
 
-	cred, ok := currentCred.(*secret.CredentialsSecret)
+	cred, ok := currentCred.(*secret.CredentialSecret)
 	if !ok {
 		return logger.WrapError("edit secret", cli.ErrInvalidSecretType)
 	}

@@ -13,32 +13,32 @@ import (
 )
 
 const (
-	notesEditCommandName      = "edit"
-	notesEditShortDescription = "edit notes from store"
-	notesEditFullDescription  = "Edit new notes from secure store,"
+	noteEditCommandName      = "edit"
+	noteEditShortDescription = "edit note from store"
+	noteEditFullDescription  = "Edit new note from secure store,"
 )
 
-type notesEditCommand struct {
+type noteEditCommand struct {
 	*baseCommand
 	generator generator.Generator
 	storage   storage.LocalSecretsStorage
 }
 
-func NewNotesEditCommand(
+func NewNoteEditCommand(
 	stream io.CommandStream,
 	generator generator.Generator,
 	storage storage.LocalSecretsStorage,
 	children ...cli.Command,
-) *notesEditCommand {
-	command := &notesEditCommand{
+) *noteEditCommand {
+	command := &noteEditCommand{
 		generator: generator,
 		storage:   storage,
 	}
 	command.baseCommand = newBaseCommand(
 		stream,
-		notesEditCommandName,
-		notesEditShortDescription,
-		notesEditFullDescription,
+		noteEditCommandName,
+		noteEditShortDescription,
+		noteEditFullDescription,
 		children,
 		[]cli.Argument{
 			newArgument("Secret identity", true, initialFullDescription, initialShortDescription),
@@ -50,38 +50,38 @@ func NewNotesEditCommand(
 	return command
 }
 
-func (c *notesEditCommand) invoke(args map[string]string) error {
+func (c *noteEditCommand) invoke(args map[string]string) error {
 	identity, ok := argValue(args, idFullArgName, idShortArgName)
 	if !ok {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	currentNotes, err := c.storage.GetSecretById(model.Notes, identity)
+	currentNote, err := c.storage.GetSecretById(model.Note, identity)
 	if err != nil {
 		return logger.WrapError("get secret", err)
 	}
 
-	if currentNotes == nil {
+	if currentNote == nil {
 		return logger.WrapError("edit secret", cli.ErrSecretNotFound)
 	}
 
-	notes, ok := currentNotes.(*secret.NotesSecret)
+	note, ok := currentNote.(*secret.NoteSecret)
 	if !ok {
 		return logger.WrapError("edit secret", cli.ErrInvalidSecretType)
 	}
 
 	text, ok := argValue(args, textFullArgName, textShortArgName)
 	if ok {
-		notes.Text = text
+		note.Text = text
 	}
 
 	comment, ok := argValue(args, commentFullArgName, commentShortArgName)
 	if ok {
-		notes.Comment = comment
+		note.Comment = comment
 	}
 
 	logger.Info("Edit note")
-	err = c.storage.ChangeSecret(notes)
+	err = c.storage.ChangeSecret(note)
 	if err != nil {
 		return logger.WrapError("edit secret", err)
 	}

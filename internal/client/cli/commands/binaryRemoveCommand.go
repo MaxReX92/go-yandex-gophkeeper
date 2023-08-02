@@ -12,32 +12,32 @@ import (
 )
 
 const (
-	credentialRemoveCommandName      = "remove"
-	credentialRemoveShortDescription = "remove credential from store"
-	credentialRemoveFullDescription  = "Remove credential from secure store,"
+	binaryRemoveCommandName      = "remove"
+	binaryRemoveShortDescription = "remove binary from store"
+	binaryRemoveFullDescription  = "Remove binary from secure store,"
 )
 
-type credentialRemoveCommand struct {
+type binaryRemoveCommand struct {
 	*baseCommand
 	storage storage.LocalSecretsStorage
 }
 
-func NewCredentialRemoveCommand(
+func NewBinaryRemoveCommand(
 	stream io.CommandStream,
 	storage storage.LocalSecretsStorage,
 	children ...cli.Command,
-) *credentialRemoveCommand {
-	command := &credentialRemoveCommand{
+) *binaryRemoveCommand {
+	command := &binaryRemoveCommand{
 		storage: storage,
 	}
 	command.baseCommand = newBaseCommand(
 		stream,
-		credentialRemoveCommandName,
-		credentialRemoveShortDescription,
-		credentialRemoveFullDescription,
+		binaryRemoveCommandName,
+		binaryRemoveShortDescription,
+		binaryRemoveFullDescription,
 		children,
 		[]cli.Argument{
-			newArgument("Remove all credential secrets", false, allFullArgName),
+			newArgument("Remove all binary secrets", false, allFullArgName),
 			newArgument("Secret identity", true, idFullArgName, idShortArgName),
 		},
 		command.invoke,
@@ -45,17 +45,17 @@ func NewCredentialRemoveCommand(
 	return command
 }
 
-func (c *credentialRemoveCommand) invoke(args map[string]string) error {
-	var toRemove []*secret.CredentialSecret
+func (c *binaryRemoveCommand) invoke(args map[string]string) error {
+	var toRemove []*secret.BinarySecret
 	_, removeAll := argValue(args, allFullArgName)
 	if removeAll {
-		credential, err := c.storage.GetAllSecrets(model.Credential)
+		binaries, err := c.storage.GetAllSecrets(model.Binary)
 		if err != nil {
 			return logger.WrapError("get all secrets", err)
 		}
 
-		for _, cred := range credential {
-			toRemove = append(toRemove, cred.(*secret.CredentialSecret))
+		for _, binary := range binaries {
+			toRemove = append(toRemove, binary.(*secret.BinarySecret))
 		}
 
 	} else {
@@ -64,19 +64,19 @@ func (c *credentialRemoveCommand) invoke(args map[string]string) error {
 			return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 		}
 
-		credential, err := c.storage.GetSecretById(model.Credential, identity)
+		binary, err := c.storage.GetSecretById(model.Binary, identity)
 		if err != nil {
 			return logger.WrapError("get secret", err)
 		}
 
-		toRemove = append(toRemove, credential.(*secret.CredentialSecret))
+		toRemove = append(toRemove, binary.(*secret.BinarySecret))
 	}
 
-	for _, cred := range toRemove {
-		logger.InfoFormat("Remove %s %s credential", cred.GetIdentity(), cred.UserName)
-		err := c.storage.RemoveSecret(cred)
+	for _, binary := range toRemove {
+		logger.InfoFormat("Remove %s binary", binary.GetIdentity())
+		err := c.storage.RemoveSecret(binary)
 		if err != nil {
-			return logger.WrapError("get secret", err)
+			return logger.WrapError("remove secret", err)
 		}
 	}
 

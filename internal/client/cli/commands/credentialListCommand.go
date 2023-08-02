@@ -41,14 +41,13 @@ func NewCredentialListCommand(stream io.CommandStream, storage storage.LocalSecr
 }
 
 func (c *credentialListCommand) invoke(args map[string]string) error {
-	_, reveal := argValue(args, revealFullArgName, revealShortArgName)
-
-	credential, err := c.storage.GetAllSecrets(model.Credential)
+	credentials, err := c.storage.GetAllSecrets(model.Credential)
 	if err != nil {
 		return logger.WrapError("get secrets", err)
 	}
 
-	for _, modelCredential := range credential {
+	_, reveal := argValue(args, revealFullArgName, revealShortArgName)
+	for _, modelCredential := range credentials {
 		cred := modelCredential.(*secret.CredentialSecret)
 		value := "***"
 		if reveal {

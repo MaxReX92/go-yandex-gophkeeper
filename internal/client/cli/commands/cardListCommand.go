@@ -42,13 +42,12 @@ func NewCardListCommand(stream io.CommandStream, storage storage.LocalSecretsSto
 }
 
 func (c *cardListCommand) invoke(args map[string]string) error {
-	_, reveal := argValue(args, revealFullArgName, revealShortArgName)
-
 	cards, err := c.storage.GetAllSecrets(model.Card)
 	if err != nil {
 		return logger.WrapError("get secrets", err)
 	}
 
+	_, reveal := argValue(args, revealFullArgName, revealShortArgName)
 	for _, modelCard := range cards {
 		card := modelCard.(*secret.CardSecret)
 		value := "***"

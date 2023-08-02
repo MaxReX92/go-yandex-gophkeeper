@@ -76,7 +76,7 @@ func (c *noteRemoveCommand) invoke(args map[string]string) error {
 		logger.InfoFormat("Remove %s note", note.GetIdentity())
 		err := c.storage.RemoveSecret(note)
 		if err != nil {
-			return logger.WrapError("get secret", err)
+			return logger.WrapError("remove secret", err)
 		}
 	}
 

@@ -41,13 +41,12 @@ func NewNoteListCommand(stream io.CommandStream, storage storage.LocalSecretsSto
 }
 
 func (c *noteListCommand) invoke(args map[string]string) error {
-	_, reveal := argValue(args, revealFullArgName, revealShortArgName)
-
 	notes, err := c.storage.GetAllSecrets(model.Note)
 	if err != nil {
 		return logger.WrapError("get secrets", err)
 	}
 
+	_, reveal := argValue(args, revealFullArgName, revealShortArgName)
 	for _, modelNote := range notes {
 		note := modelNote.(*secret.NoteSecret)
 		value := "***"

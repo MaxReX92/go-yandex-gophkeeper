@@ -12,32 +12,32 @@ import (
 )
 
 const (
-	cardRemoveCommandName      = "remove"
-	cardRemoveShortDescription = "remove card from store"
-	cardRemoveFullDescription  = "Remove card from secure store,"
+	credentialRemoveCommandName      = "remove"
+	credentialRemoveShortDescription = "remove credential from store"
+	credentialRemoveFullDescription  = "Remove credential from secure store,"
 )
 
-type cardRemoveCommand struct {
+type credentialRemoveCommand struct {
 	*baseCommand
 	storage storage.LocalSecretsStorage
 }
 
-func NewCardRemoveCommand(
+func NewCredentialRemoveCommand(
 	stream io.CommandStream,
 	storage storage.LocalSecretsStorage,
 	children ...cli.Command,
-) *cardRemoveCommand {
-	command := &cardRemoveCommand{
+) *credentialRemoveCommand {
+	command := &credentialRemoveCommand{
 		storage: storage,
 	}
 	command.baseCommand = newBaseCommand(
 		stream,
-		cardRemoveCommandName,
-		cardRemoveShortDescription,
-		cardRemoveFullDescription,
+		credentialRemoveCommandName,
+		credentialRemoveShortDescription,
+		credentialRemoveFullDescription,
 		children,
 		[]cli.Argument{
-			newArgument("Remove all card secrets", false, allFullArgName),
+			newArgument("Remove all credential secrets", false, allFullArgName),
 			newArgument("Secret identity", true, idFullArgName, idShortArgName),
 		},
 		command.invoke,
@@ -45,17 +45,17 @@ func NewCardRemoveCommand(
 	return command
 }
 
-func (c *cardRemoveCommand) invoke(args map[string]string) error {
-	var toRemove []*secret.CardSecret
+func (c *credentialRemoveCommand) invoke(args map[string]string) error {
+	var toRemove []*secret.CredentialSecret
 	_, removeAll := argValue(args, allFullArgName)
 	if removeAll {
-		cards, err := c.storage.GetAllSecrets(model.Card)
+		credential, err := c.storage.GetAllSecrets(model.Credential)
 		if err != nil {
 			return logger.WrapError("get all secrets", err)
 		}
 
-		for _, card := range cards {
-			toRemove = append(toRemove, card.(*secret.CardSecret))
+		for _, cred := range credential {
+			toRemove = append(toRemove, cred.(*secret.CredentialSecret))
 		}
 
 	} else {
@@ -64,17 +64,17 @@ func (c *cardRemoveCommand) invoke(args map[string]string) error {
 			return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 		}
 
-		card, err := c.storage.GetSecretById(model.Card, identity)
+		credential, err := c.storage.GetSecretById(model.Credential, identity)
 		if err != nil {
 			return logger.WrapError("get secret", err)
 		}
 
-		toRemove = append(toRemove, card.(*secret.CardSecret))
+		toRemove = append(toRemove, credential.(*secret.CredentialSecret))
 	}
 
-	for _, card := range toRemove {
-		logger.InfoFormat("Remove %s %s card", card.GetIdentity(), card.Number)
-		err := c.storage.RemoveSecret(card)
+	for _, cred := range toRemove {
+		logger.InfoFormat("Remove %s %s credential", cred.GetIdentity(), cred.UserName)
+		err := c.storage.RemoveSecret(cred)
 		if err != nil {
 			return logger.WrapError("remove secret", err)
 		}

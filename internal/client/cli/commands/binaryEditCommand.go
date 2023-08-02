@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
-	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/generator"
 	clientIO "github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
@@ -25,19 +24,16 @@ const (
 
 type binaryEditCommand struct {
 	*baseCommand
-	generator generator.Generator
-	storage   storage.LocalSecretsStorage
+	storage storage.LocalSecretsStorage
 }
 
 func NewBinaryEditCommand(
 	stream clientIO.CommandStream,
-	generator generator.Generator,
 	storage storage.LocalSecretsStorage,
 	children ...cli.Command,
 ) *binaryEditCommand {
 	command := &binaryEditCommand{
-		generator: generator,
-		storage:   storage,
+		storage: storage,
 	}
 	command.baseCommand = newBaseCommand(
 		stream,

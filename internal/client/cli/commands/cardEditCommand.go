@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
-	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/generator"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
@@ -22,19 +21,16 @@ const (
 
 type cardEditCommand struct {
 	*baseCommand
-	generator generator.Generator
-	storage   storage.LocalSecretsStorage
+	storage storage.LocalSecretsStorage
 }
 
 func NewCardEditCommand(
 	stream io.CommandStream,
-	generator generator.Generator,
 	storage storage.LocalSecretsStorage,
 	children ...cli.Command,
 ) *cardEditCommand {
 	command := &cardEditCommand{
-		generator: generator,
-		storage:   storage,
+		storage: storage,
 	}
 	command.baseCommand = newBaseCommand(
 		stream,

@@ -34,7 +34,7 @@ message User {
   string identity = 1;
 }
 
-service AmaService {
+service SecretService {
   rpc Ping (Void) returns (Void);
   rpc SecretEvents (User) returns (stream SecretEvent);
 }

@@ -20,41 +20,41 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AmaService_Ping_FullMethodName         = "/com.github.MaxReX92.go_yandex_gophkeeper.AmaService/Ping"
-	AmaService_SecretEvents_FullMethodName = "/com.github.MaxReX92.go_yandex_gophkeeper.AmaService/SecretEvents"
+	SecretService_Ping_FullMethodName         = "/com.github.MaxReX92.go_yandex_gophkeeper.SecretService/Ping"
+	SecretService_SecretEvents_FullMethodName = "/com.github.MaxReX92.go_yandex_gophkeeper.SecretService/SecretEvents"
 )
 
-// AmaServiceClient is the client API for AmaService service.
+// SecretServiceClient is the client API for SecretService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type AmaServiceClient interface {
+type SecretServiceClient interface {
 	Ping(ctx context.Context, in *Void, opts ...grpc.CallOption) (*Void, error)
-	SecretEvents(ctx context.Context, in *User, opts ...grpc.CallOption) (AmaService_SecretEventsClient, error)
+	SecretEvents(ctx context.Context, in *User, opts ...grpc.CallOption) (SecretService_SecretEventsClient, error)
 }
 
-type amaServiceClient struct {
+type secretServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewAmaServiceClient(cc grpc.ClientConnInterface) AmaServiceClient {
-	return &amaServiceClient{cc}
+func NewSecretServiceClient(cc grpc.ClientConnInterface) SecretServiceClient {
+	return &secretServiceClient{cc}
 }
 
-func (c *amaServiceClient) Ping(ctx context.Context, in *Void, opts ...grpc.CallOption) (*Void, error) {
+func (c *secretServiceClient) Ping(ctx context.Context, in *Void, opts ...grpc.CallOption) (*Void, error) {
 	out := new(Void)
-	err := c.cc.Invoke(ctx, AmaService_Ping_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, SecretService_Ping_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *amaServiceClient) SecretEvents(ctx context.Context, in *User, opts ...grpc.CallOption) (AmaService_SecretEventsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &AmaService_ServiceDesc.Streams[0], AmaService_SecretEvents_FullMethodName, opts...)
+func (c *secretServiceClient) SecretEvents(ctx context.Context, in *User, opts ...grpc.CallOption) (SecretService_SecretEventsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &SecretService_ServiceDesc.Streams[0], SecretService_SecretEvents_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &amaServiceSecretEventsClient{stream}
+	x := &secretServiceSecretEventsClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -64,16 +64,16 @@ func (c *amaServiceClient) SecretEvents(ctx context.Context, in *User, opts ...g
 	return x, nil
 }
 
-type AmaService_SecretEventsClient interface {
+type SecretService_SecretEventsClient interface {
 	Recv() (*SecretEvent, error)
 	grpc.ClientStream
 }
 
-type amaServiceSecretEventsClient struct {
+type secretServiceSecretEventsClient struct {
 	grpc.ClientStream
 }
 
-func (x *amaServiceSecretEventsClient) Recv() (*SecretEvent, error) {
+func (x *secretServiceSecretEventsClient) Recv() (*SecretEvent, error) {
 	m := new(SecretEvent)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -81,93 +81,93 @@ func (x *amaServiceSecretEventsClient) Recv() (*SecretEvent, error) {
 	return m, nil
 }
 
-// AmaServiceServer is the server API for AmaService service.
-// All implementations must embed UnimplementedAmaServiceServer
+// SecretServiceServer is the server API for SecretService service.
+// All implementations must embed UnimplementedSecretServiceServer
 // for forward compatibility
-type AmaServiceServer interface {
+type SecretServiceServer interface {
 	Ping(context.Context, *Void) (*Void, error)
-	SecretEvents(*User, AmaService_SecretEventsServer) error
-	mustEmbedUnimplementedAmaServiceServer()
+	SecretEvents(*User, SecretService_SecretEventsServer) error
+	mustEmbedUnimplementedSecretServiceServer()
 }
 
-// UnimplementedAmaServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedAmaServiceServer struct {
+// UnimplementedSecretServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedSecretServiceServer struct {
 }
 
-func (UnimplementedAmaServiceServer) Ping(context.Context, *Void) (*Void, error) {
+func (UnimplementedSecretServiceServer) Ping(context.Context, *Void) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
-func (UnimplementedAmaServiceServer) SecretEvents(*User, AmaService_SecretEventsServer) error {
+func (UnimplementedSecretServiceServer) SecretEvents(*User, SecretService_SecretEventsServer) error {
 	return status.Errorf(codes.Unimplemented, "method SecretEvents not implemented")
 }
-func (UnimplementedAmaServiceServer) mustEmbedUnimplementedAmaServiceServer() {}
+func (UnimplementedSecretServiceServer) mustEmbedUnimplementedSecretServiceServer() {}
 
-// UnsafeAmaServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to AmaServiceServer will
+// UnsafeSecretServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to SecretServiceServer will
 // result in compilation errors.
-type UnsafeAmaServiceServer interface {
-	mustEmbedUnimplementedAmaServiceServer()
+type UnsafeSecretServiceServer interface {
+	mustEmbedUnimplementedSecretServiceServer()
 }
 
-func RegisterAmaServiceServer(s grpc.ServiceRegistrar, srv AmaServiceServer) {
-	s.RegisterService(&AmaService_ServiceDesc, srv)
+func RegisterSecretServiceServer(s grpc.ServiceRegistrar, srv SecretServiceServer) {
+	s.RegisterService(&SecretService_ServiceDesc, srv)
 }
 
-func _AmaService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _SecretService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Void)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AmaServiceServer).Ping(ctx, in)
+		return srv.(SecretServiceServer).Ping(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AmaService_Ping_FullMethodName,
+		FullMethod: SecretService_Ping_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AmaServiceServer).Ping(ctx, req.(*Void))
+		return srv.(SecretServiceServer).Ping(ctx, req.(*Void))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AmaService_SecretEvents_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _SecretService_SecretEvents_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(User)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(AmaServiceServer).SecretEvents(m, &amaServiceSecretEventsServer{stream})
+	return srv.(SecretServiceServer).SecretEvents(m, &secretServiceSecretEventsServer{stream})
 }
 
-type AmaService_SecretEventsServer interface {
+type SecretService_SecretEventsServer interface {
 	Send(*SecretEvent) error
 	grpc.ServerStream
 }
 
-type amaServiceSecretEventsServer struct {
+type secretServiceSecretEventsServer struct {
 	grpc.ServerStream
 }
 
-func (x *amaServiceSecretEventsServer) Send(m *SecretEvent) error {
+func (x *secretServiceSecretEventsServer) Send(m *SecretEvent) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-// AmaService_ServiceDesc is the grpc.ServiceDesc for AmaService service.
+// SecretService_ServiceDesc is the grpc.ServiceDesc for SecretService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var AmaService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "com.github.MaxReX92.go_yandex_gophkeeper.AmaService",
-	HandlerType: (*AmaServiceServer)(nil),
+var SecretService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "com.github.MaxReX92.go_yandex_gophkeeper.SecretService",
+	HandlerType: (*SecretServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Ping",
-			Handler:    _AmaService_Ping_Handler,
+			Handler:    _SecretService_Ping_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "SecretEvents",
-			Handler:       _AmaService_SecretEvents_Handler,
+			Handler:       _SecretService_SecretEvents_Handler,
 			ServerStreams: true,
 		},
 	},

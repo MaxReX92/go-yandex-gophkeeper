@@ -19,12 +19,12 @@ const (
 
 type credentialRemoveCommand struct {
 	*baseCommand
-	storage storage.LocalSecretsStorage
+	storage storage.ClientSecretsStorage
 }
 
 func NewCredentialRemoveCommand(
 	stream io.CommandStream,
-	storage storage.LocalSecretsStorage,
+	storage storage.ClientSecretsStorage,
 	children ...cli.Command,
 ) *credentialRemoveCommand {
 	command := &credentialRemoveCommand{

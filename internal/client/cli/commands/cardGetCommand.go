@@ -20,10 +20,10 @@ const (
 
 type cardGetCommand struct {
 	*baseCommand
-	storage storage.LocalSecretsStorage
+	storage storage.ClientSecretsStorage
 }
 
-func NewCardGetCommand(stream io.CommandStream, storage storage.LocalSecretsStorage, children ...cli.Command) *cardGetCommand {
+func NewCardGetCommand(stream io.CommandStream, storage storage.ClientSecretsStorage, children ...cli.Command) *cardGetCommand {
 	command := &cardGetCommand{
 		storage: storage,
 	}

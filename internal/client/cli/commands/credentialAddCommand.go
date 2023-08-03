@@ -20,13 +20,13 @@ const (
 type credentialAddCommand struct {
 	*baseCommand
 	generator generator.Generator
-	storage   storage.LocalSecretsStorage
+	storage   storage.ClientSecretsStorage
 }
 
 func NewCredentialAddCommand(
 	stream io.CommandStream,
 	generator generator.Generator,
-	storage storage.LocalSecretsStorage,
+	storage storage.ClientSecretsStorage,
 	children ...cli.Command,
 ) *credentialAddCommand {
 	command := &credentialAddCommand{

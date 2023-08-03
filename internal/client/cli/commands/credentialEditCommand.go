@@ -19,12 +19,12 @@ const (
 
 type credentialEditCommand struct {
 	*baseCommand
-	storage storage.LocalSecretsStorage
+	storage storage.ClientSecretsStorage
 }
 
 func NewCredentialEditCommand(
 	stream io.CommandStream,
-	storage storage.LocalSecretsStorage,
+	storage storage.ClientSecretsStorage,
 	children ...cli.Command,
 ) *credentialEditCommand {
 	command := &credentialEditCommand{

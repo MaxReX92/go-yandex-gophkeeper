@@ -22,13 +22,13 @@ const (
 type cardAddCommand struct {
 	*baseCommand
 	generator generator.Generator
-	storage   storage.LocalSecretsStorage
+	storage   storage.ClientSecretsStorage
 }
 
 func NewCardAddCommand(
 	stream io.CommandStream,
 	generator generator.Generator,
-	storage storage.LocalSecretsStorage,
+	storage storage.ClientSecretsStorage,
 	children ...cli.Command,
 ) *cardAddCommand {
 	command := &cardAddCommand{

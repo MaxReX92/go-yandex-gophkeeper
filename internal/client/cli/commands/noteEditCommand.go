@@ -19,12 +19,12 @@ const (
 
 type noteEditCommand struct {
 	*baseCommand
-	storage storage.LocalSecretsStorage
+	storage storage.ClientSecretsStorage
 }
 
 func NewNoteEditCommand(
 	stream io.CommandStream,
-	storage storage.LocalSecretsStorage,
+	storage storage.ClientSecretsStorage,
 	children ...cli.Command,
 ) *noteEditCommand {
 	command := &noteEditCommand{

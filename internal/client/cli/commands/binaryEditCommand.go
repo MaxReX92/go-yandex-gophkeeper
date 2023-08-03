@@ -24,12 +24,12 @@ const (
 
 type binaryEditCommand struct {
 	*baseCommand
-	storage storage.LocalSecretsStorage
+	storage storage.ClientSecretsStorage
 }
 
 func NewBinaryEditCommand(
 	stream clientIO.CommandStream,
-	storage storage.LocalSecretsStorage,
+	storage storage.ClientSecretsStorage,
 	children ...cli.Command,
 ) *binaryEditCommand {
 	command := &binaryEditCommand{

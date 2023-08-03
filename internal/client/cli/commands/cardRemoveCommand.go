@@ -19,12 +19,12 @@ const (
 
 type cardRemoveCommand struct {
 	*baseCommand
-	storage storage.LocalSecretsStorage
+	storage storage.ClientSecretsStorage
 }
 
 func NewCardRemoveCommand(
 	stream io.CommandStream,
-	storage storage.LocalSecretsStorage,
+	storage storage.ClientSecretsStorage,
 	children ...cli.Command,
 ) *cardRemoveCommand {
 	command := &cardRemoveCommand{

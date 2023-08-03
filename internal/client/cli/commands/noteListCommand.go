@@ -19,10 +19,10 @@ const (
 
 type noteListCommand struct {
 	*baseCommand
-	storage storage.LocalSecretsStorage
+	storage storage.ClientSecretsStorage
 }
 
-func NewNoteListCommand(stream io.CommandStream, storage storage.LocalSecretsStorage, children ...cli.Command) *noteListCommand {
+func NewNoteListCommand(stream io.CommandStream, storage storage.ClientSecretsStorage, children ...cli.Command) *noteListCommand {
 	command := &noteListCommand{
 		storage: storage,
 	}

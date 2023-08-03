@@ -12,6 +12,7 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage/memory"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage/remote"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/runner"
 )
@@ -35,8 +36,9 @@ func main() {
 	ioStream := io.NewIOStream(os.Stdin, os.Stdout)
 	randomGenerator := rand.NewGenerator()
 	memoryStorage := memory.NewStorage()
-
-	initialCommand := buildCommands(ioStream, randomGenerator, memoryStorage)
+	remoteStorage := remote.NewStorage()
+	clientStorage := storage.NewStorageStrategy(memoryStorage, remoteStorage)
+	initialCommand := buildCommands(ioStream, randomGenerator, clientStorage)
 	handler := cli.NewHandler(ioStream, initialCommand)
 	app := runner.NewGracefulRunner(handler)
 
@@ -60,7 +62,7 @@ func main() {
 func buildCommands(
 	ioStream io.CommandStream,
 	generator generator.Generator,
-	storage storage.LocalSecretsStorage,
+	storage storage.ClientSecretsStorage,
 ) cli.Command {
 	// binary
 	binaryAddCommand := commands.NewBinaryAddCommand(ioStream, generator, storage, commands.NewHelpCommand())

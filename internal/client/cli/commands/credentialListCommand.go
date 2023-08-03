@@ -19,10 +19,10 @@ const (
 
 type credentialListCommand struct {
 	*baseCommand
-	storage storage.LocalSecretsStorage
+	storage storage.ClientSecretsStorage
 }
 
-func NewCredentialListCommand(stream io.CommandStream, storage storage.LocalSecretsStorage, children ...cli.Command) *credentialListCommand {
+func NewCredentialListCommand(stream io.CommandStream, storage storage.ClientSecretsStorage, children ...cli.Command) *credentialListCommand {
 	command := &credentialListCommand{
 		storage: storage,
 	}

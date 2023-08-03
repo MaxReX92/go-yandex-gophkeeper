@@ -22,10 +22,10 @@ const (
 
 type binaryGetCommand struct {
 	*baseCommand
-	storage storage.LocalSecretsStorage
+	storage storage.ClientSecretsStorage
 }
 
-func NewBinaryGetCommand(stream clientIO.CommandStream, storage storage.LocalSecretsStorage, children ...cli.Command) *binaryGetCommand {
+func NewBinaryGetCommand(stream clientIO.CommandStream, storage storage.ClientSecretsStorage, children ...cli.Command) *binaryGetCommand {
 	command := &binaryGetCommand{
 		storage: storage,
 	}

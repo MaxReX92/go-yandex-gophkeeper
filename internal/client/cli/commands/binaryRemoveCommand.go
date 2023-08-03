@@ -19,12 +19,12 @@ const (
 
 type binaryRemoveCommand struct {
 	*baseCommand
-	storage storage.LocalSecretsStorage
+	storage storage.ClientSecretsStorage
 }
 
 func NewBinaryRemoveCommand(
 	stream io.CommandStream,
-	storage storage.LocalSecretsStorage,
+	storage storage.ClientSecretsStorage,
 	children ...cli.Command,
 ) *binaryRemoveCommand {
 	command := &binaryRemoveCommand{

@@ -26,13 +26,13 @@ const (
 type binaryAddCommand struct {
 	*baseCommand
 	generator generator.Generator
-	storage   storage.LocalSecretsStorage
+	storage   storage.ClientSecretsStorage
 }
 
 func NewBinaryAddCommand(
 	stream clientIO.CommandStream,
 	generator generator.Generator,
-	storage storage.LocalSecretsStorage,
+	storage storage.ClientSecretsStorage,
 	children ...cli.Command,
 ) *binaryAddCommand {
 	command := &binaryAddCommand{

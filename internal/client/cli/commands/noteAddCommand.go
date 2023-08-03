@@ -20,13 +20,13 @@ const (
 type noteAddCommand struct {
 	*baseCommand
 	generator generator.Generator
-	storage   storage.LocalSecretsStorage
+	storage   storage.ClientSecretsStorage
 }
 
 func NewNoteAddCommand(
 	stream io.CommandStream,
 	generator generator.Generator,
-	storage storage.LocalSecretsStorage,
+	storage storage.ClientSecretsStorage,
 	children ...cli.Command,
 ) *noteAddCommand {
 	command := &noteAddCommand{

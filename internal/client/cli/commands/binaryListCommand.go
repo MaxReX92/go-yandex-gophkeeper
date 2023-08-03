@@ -19,10 +19,10 @@ const (
 
 type binaryListCommand struct {
 	*baseCommand
-	storage storage.LocalSecretsStorage
+	storage storage.ClientSecretsStorage
 }
 
-func NewBinaryListCommand(stream io.CommandStream, storage storage.LocalSecretsStorage, children ...cli.Command) *binaryListCommand {
+func NewBinaryListCommand(stream io.CommandStream, storage storage.ClientSecretsStorage, children ...cli.Command) *binaryListCommand {
 	command := &binaryListCommand{
 		storage: storage,
 	}

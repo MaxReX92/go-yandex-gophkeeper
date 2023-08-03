@@ -19,12 +19,12 @@ const (
 
 type noteRemoveCommand struct {
 	*baseCommand
-	storage storage.LocalSecretsStorage
+	storage storage.ClientSecretsStorage
 }
 
 func NewNoteRemoveCommand(
 	stream io.CommandStream,
-	storage storage.LocalSecretsStorage,
+	storage storage.ClientSecretsStorage,
 	children ...cli.Command,
 ) *noteRemoveCommand {
 	command := &noteRemoveCommand{

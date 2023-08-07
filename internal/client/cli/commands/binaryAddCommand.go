@@ -2,6 +2,7 @@ package commands
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -56,7 +57,7 @@ func NewBinaryAddCommand(
 	return command
 }
 
-func (c *binaryAddCommand) invoke(args map[string]string) error {
+func (c *binaryAddCommand) invoke(ctx context.Context, args map[string]string) error {
 	name, ok := argValue(args, nameFullArgName, nameShortArgName)
 	if !ok {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: name is missed", c.name), cli.ErrRequiredArgNotFound)
@@ -93,7 +94,7 @@ func (c *binaryAddCommand) invoke(args map[string]string) error {
 
 	binary := secret.NewBinarySecret(name, reader, c.generator.GenerateNewIdentity(), comment)
 	logger.Info("Add binary")
-	err := c.storage.AddSecret(nil, binary)
+	err := c.storage.AddSecret(ctx, binary)
 	if err != nil {
 		return logger.WrapError("add secret", err)
 	}

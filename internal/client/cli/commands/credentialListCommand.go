@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
@@ -40,8 +41,8 @@ func NewCredentialListCommand(stream io.CommandStream, storage storage.ClientSec
 	return command
 }
 
-func (c *credentialListCommand) invoke(args map[string]string) error {
-	credentials, err := c.storage.GetAllSecrets(nil, model.Credential)
+func (c *credentialListCommand) invoke(ctx context.Context, args map[string]string) error {
+	credentials, err := c.storage.GetAllSecrets(ctx, model.Credential)
 	if err != nil {
 		return logger.WrapError("get secrets", err)
 	}

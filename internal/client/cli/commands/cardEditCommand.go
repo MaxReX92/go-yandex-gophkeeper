@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -50,13 +51,13 @@ func NewCardEditCommand(
 	return command
 }
 
-func (c *cardEditCommand) invoke(args map[string]string) error {
+func (c *cardEditCommand) invoke(ctx context.Context, args map[string]string) error {
 	identity, ok := argValue(args, idFullArgName, idShortArgName)
 	if !ok {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	currentCard, err := c.storage.GetSecretById(nil, model.Card, identity)
+	currentCard, err := c.storage.GetSecretById(ctx, model.Card, identity)
 	if err != nil {
 		return logger.WrapError("get secret", err)
 	}
@@ -105,7 +106,7 @@ func (c *cardEditCommand) invoke(args map[string]string) error {
 	}
 
 	logger.InfoFormat("Edit %s card", number)
-	err = c.storage.ChangeSecret(nil, card)
+	err = c.storage.ChangeSecret(ctx, card)
 	if err != nil {
 		return logger.WrapError("edit secret", err)
 	}

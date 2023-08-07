@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"encoding/base64"
 	"fmt"
 	"io"
@@ -45,13 +46,13 @@ func NewBinaryGetCommand(stream clientIO.CommandStream, storage storage.ClientSe
 	return command
 }
 
-func (c *binaryGetCommand) invoke(args map[string]string) error {
+func (c *binaryGetCommand) invoke(ctx context.Context, args map[string]string) error {
 	identity, ok := argValue(args, idFullArgName, idShortArgName)
 	if !ok {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	binarySecret, err := c.storage.GetSecretById(nil, model.Binary, identity)
+	binarySecret, err := c.storage.GetSecretById(ctx, model.Binary, identity)
 	if err != nil {
 		return logger.WrapError("get binary secret", err)
 	}

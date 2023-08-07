@@ -22,11 +22,11 @@ import (
 	"github.com/caarlos0/env/v7"
 )
 
-const defaultGrpcAddress = "127.0.0.1:3200"
-
 type config struct {
 	ConfigPath  string `env:"CONFIG"`
-	GrpcAddress string `env:"GRPC_ADDRESS" json:"grpc_address,omitempty"`
+	LogsPath    string `env:"LOGS_PATH" envDefault:"./log.txt" json:"logs_path,omitempty"`
+	GrpcAddress string `env:"GRPC_ADDRESS" envDefault:"127.0.0.1:3200" json:"grpc_address,omitempty"`
+	IdentityLen int32  `env:"IDENTITY_LEN" envDefault:"8" json:"identity_len,omitempty"`
 }
 
 func main() {
@@ -40,13 +40,21 @@ func main() {
 		panic(logger.WrapError("create config", err))
 	}
 
+	// init logger
+	logFile, err := os.OpenFile(conf.LogsPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		panic(logger.WrapError("error opening log file", err))
+	}
+	defer logFile.Close()
+	logger.SetOutput(logFile)
+
 	// interrupt
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
 	// build app
 	ioStream := io.NewIOStream(os.Stdin, os.Stdout)
-	randomGenerator := rand.NewGenerator()
+	randomGenerator := rand.NewGenerator(conf)
 	serializer := internalJson.NewSerializer()
 	converter := modelGrpc.NewConverter(serializer)
 	service, err := grpc.NewService(conf, converter)
@@ -97,9 +105,6 @@ func createConfig() (*config, error) {
 		if err != nil {
 			return nil, logger.WrapError("unmarshal json config file", err)
 		}
-	}
-	if conf.GrpcAddress == "" {
-		conf.GrpcAddress = defaultGrpcAddress
 	}
 
 	return conf, nil
@@ -190,4 +195,8 @@ func buildCommands(
 
 func (c *config) GrpcServerAddress() string {
 	return c.GrpcAddress
+}
+
+func (c *config) IdentityLength() int32 {
+	return c.IdentityLen
 }

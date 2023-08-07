@@ -1,11 +1,13 @@
 package cli
 
+import "context"
+
 type Command interface {
 	Name() string
 	FullName() string
 	ShortDescription() string
 	SetParent(command Command)
-	Invoke(keys []string) error
+	Invoke(ctx context.Context, keys []string) error
 	ShowHelp()
 }
 

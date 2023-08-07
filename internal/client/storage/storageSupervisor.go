@@ -39,6 +39,8 @@ func (s *storageSupervisor) Start(ctx context.Context) error {
 }
 
 func (s *storageSupervisor) handleEvent(ctx context.Context, event *model.SecretEvent) error {
+	logger.InfoFormat("event received: %s", event)
+
 	eventType := event.Type
 	switch eventType {
 	case model.Initial, model.Add:

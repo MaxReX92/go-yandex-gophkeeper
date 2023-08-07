@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strings"
@@ -17,7 +18,7 @@ type baseCommand struct {
 	parent           cli.Command
 	children         map[string]cli.Command
 	args             map[string]cli.Argument
-	invokeMethod     func(map[string]string) error
+	invokeMethod     func(context.Context, map[string]string) error
 }
 
 func newBaseCommand(
@@ -27,7 +28,7 @@ func newBaseCommand(
 	fullDescription string,
 	children []cli.Command,
 	args []cli.Argument,
-	invokeMethod func(map[string]string) error,
+	invokeMethod func(context.Context, map[string]string) error,
 ) *baseCommand {
 	base := &baseCommand{
 		stream:           stream,
@@ -77,15 +78,15 @@ func (c *baseCommand) SetParent(command cli.Command) {
 	c.parent = command
 }
 
-func (c *baseCommand) Invoke(keys []string) error {
+func (c *baseCommand) Invoke(ctx context.Context, keys []string) error {
 	args := make(map[string]string)
 	keysLenhth := len(keys)
 	if keysLenhth == 0 {
-		return c.invokeMethod(args)
+		return c.invokeMethod(ctx, args)
 	}
 
 	if childCommand, ok := c.children[keys[0]]; ok {
-		return childCommand.Invoke(keys[1:])
+		return childCommand.Invoke(ctx, keys[1:])
 	}
 
 	for i := 0; i < keysLenhth; i++ {
@@ -110,7 +111,7 @@ func (c *baseCommand) Invoke(keys []string) error {
 		args[key] = value
 	}
 
-	return c.invokeMethod(args)
+	return c.invokeMethod(ctx, args)
 }
 
 func (c *baseCommand) ShowHelp() {

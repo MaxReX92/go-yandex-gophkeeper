@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"context"
+
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
 )
@@ -29,7 +31,7 @@ func NewStatusCommand(stream io.CommandStream, children ...cli.Command) *statusC
 	return command
 }
 
-func (c *statusCommand) invoke(map[string]string) error {
+func (c *statusCommand) invoke(context.Context, map[string]string) error {
 	c.stream.Write("OK")
 	return nil
 }

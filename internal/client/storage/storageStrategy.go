@@ -20,7 +20,7 @@ func NewStorageStrategy(memoryStorage ClientSecretsStorage, remoteStorage Client
 }
 
 func (s *storageStrategy) AddSecret(ctx context.Context, secret model.Secret) error {
-	err := s.remoteStorage.AddSecret(nil, secret)
+	err := s.remoteStorage.AddSecret(ctx, secret)
 	if err != nil {
 		return logger.WrapError("add remote secret", err)
 	}
@@ -29,7 +29,7 @@ func (s *storageStrategy) AddSecret(ctx context.Context, secret model.Secret) er
 }
 
 func (s *storageStrategy) ChangeSecret(ctx context.Context, secret model.Secret) error {
-	err := s.remoteStorage.ChangeSecret(nil, secret)
+	err := s.remoteStorage.ChangeSecret(ctx, secret)
 	if err != nil {
 		return logger.WrapError("change remote secret", err)
 	}
@@ -38,15 +38,15 @@ func (s *storageStrategy) ChangeSecret(ctx context.Context, secret model.Secret)
 }
 
 func (s *storageStrategy) GetSecretById(ctx context.Context, secretType model.SecretType, identity string) (model.Secret, error) {
-	return s.memoryStorage.GetSecretById(nil, secretType, identity)
+	return s.memoryStorage.GetSecretById(ctx, secretType, identity)
 }
 
 func (s *storageStrategy) GetAllSecrets(ctx context.Context, secretType model.SecretType) ([]model.Secret, error) {
-	return s.memoryStorage.GetAllSecrets(nil, secretType)
+	return s.memoryStorage.GetAllSecrets(ctx, secretType)
 }
 
 func (s *storageStrategy) RemoveSecret(ctx context.Context, secret model.Secret) error {
-	err := s.remoteStorage.RemoveSecret(nil, secret)
+	err := s.remoteStorage.RemoveSecret(ctx, secret)
 	if err != nil {
 		return logger.WrapError("remove remote secret", err)
 	}

@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
@@ -42,13 +43,13 @@ func NewCardGetCommand(stream io.CommandStream, storage storage.ClientSecretsSto
 	return command
 }
 
-func (c *cardGetCommand) invoke(args map[string]string) error {
+func (c *cardGetCommand) invoke(ctx context.Context, args map[string]string) error {
 	identity, ok := argValue(args, idFullArgName, idShortArgName)
 	if !ok {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	cardSecret, err := c.storage.GetSecretById(nil, model.Card, identity)
+	cardSecret, err := c.storage.GetSecretById(ctx, model.Card, identity)
 	if err != nil {
 		return logger.WrapError("get card secret", err)
 	}

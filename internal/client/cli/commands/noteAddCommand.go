@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
@@ -48,7 +49,7 @@ func NewNoteAddCommand(
 	return command
 }
 
-func (c *noteAddCommand) invoke(args map[string]string) error {
+func (c *noteAddCommand) invoke(ctx context.Context, args map[string]string) error {
 	text, ok := argValue(args, textFullArgName, textShortArgName)
 	if !ok {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: note texttext is missed", c.name), cli.ErrRequiredArgNotFound)
@@ -58,7 +59,7 @@ func (c *noteAddCommand) invoke(args map[string]string) error {
 
 	note := secret.NewNoteSecret(text, c.generator.GenerateNewIdentity(), comment)
 	logger.InfoFormat("Add %s note", note.Text)
-	err := c.storage.AddSecret(nil, note)
+	err := c.storage.AddSecret(ctx, note)
 	if err != nil {
 		return logger.WrapError("add secret", err)
 	}

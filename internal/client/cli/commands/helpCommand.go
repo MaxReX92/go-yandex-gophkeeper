@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
@@ -33,7 +34,7 @@ func (c *helpCommand) SetParent(command cli.Command) {
 	c.parent = command
 }
 
-func (c *helpCommand) Invoke(keys []string) error {
+func (c *helpCommand) Invoke(context.Context, []string) error {
 	c.parent.ShowHelp()
 	return nil
 }

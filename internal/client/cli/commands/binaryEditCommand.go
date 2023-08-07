@@ -2,6 +2,7 @@ package commands
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -51,13 +52,13 @@ func NewBinaryEditCommand(
 	return command
 }
 
-func (c *binaryEditCommand) invoke(args map[string]string) error {
+func (c *binaryEditCommand) invoke(ctx context.Context, args map[string]string) error {
 	identity, ok := argValue(args, idFullArgName, idShortArgName)
 	if !ok {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	currentBinary, err := c.storage.GetSecretById(nil, model.Binary, identity)
+	currentBinary, err := c.storage.GetSecretById(ctx, model.Binary, identity)
 	if err != nil {
 		return logger.WrapError("get secret", err)
 	}
@@ -108,7 +109,7 @@ func (c *binaryEditCommand) invoke(args map[string]string) error {
 	}
 
 	logger.Info("Edit binary")
-	err = c.storage.ChangeSecret(nil, binary)
+	err = c.storage.ChangeSecret(ctx, binary)
 	if err != nil {
 		return logger.WrapError("edit secret", err)
 	}

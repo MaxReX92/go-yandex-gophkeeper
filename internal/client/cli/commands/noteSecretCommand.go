@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
@@ -33,7 +34,7 @@ func NewNoteCommand(stream io.CommandStream, children ...cli.Command) *noteComma
 	return command
 }
 
-func (c *noteCommand) invoke(map[string]string) error {
+func (c *noteCommand) invoke(context.Context, map[string]string) error {
 	c.stream.Write(fmt.Sprintf("Unexpected command arguments. See '%s help'.\n", c.FullName()))
 	return nil
 }

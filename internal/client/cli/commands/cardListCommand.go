@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
@@ -41,8 +42,8 @@ func NewCardListCommand(stream io.CommandStream, storage storage.ClientSecretsSt
 	return command
 }
 
-func (c *cardListCommand) invoke(args map[string]string) error {
-	cards, err := c.storage.GetAllSecrets(nil, model.Card)
+func (c *cardListCommand) invoke(ctx context.Context, args map[string]string) error {
+	cards, err := c.storage.GetAllSecrets(ctx, model.Card)
 	if err != nil {
 		return logger.WrapError("get secrets", err)
 	}

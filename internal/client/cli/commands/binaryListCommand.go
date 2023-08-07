@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
@@ -38,8 +39,8 @@ func NewBinaryListCommand(stream io.CommandStream, storage storage.ClientSecrets
 	return command
 }
 
-func (c *binaryListCommand) invoke(args map[string]string) error {
-	binaries, err := c.storage.GetAllSecrets(nil, model.Binary)
+func (c *binaryListCommand) invoke(ctx context.Context, args map[string]string) error {
+	binaries, err := c.storage.GetAllSecrets(ctx, model.Binary)
 	if err != nil {
 		return logger.WrapError("get secrets", err)
 	}

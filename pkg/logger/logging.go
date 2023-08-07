@@ -17,6 +17,11 @@ func Writer() io.Writer {
 	return &writer{}
 }
 
+// SetOutput sets the output destination for the standard logger.
+func SetOutput(w io.Writer) {
+	log.SetOutput(w)
+}
+
 func Info(message string) {
 	log.Printf("[INFO]: %v\r\n", message)
 }

@@ -5,7 +5,7 @@ import "math/rand"
 const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 type RandomGeneratorConfig interface {
-	IdentityLen() int32
+	IdentityLength() int32
 }
 
 type randomGenerator struct {
@@ -14,7 +14,7 @@ type randomGenerator struct {
 
 func NewGenerator(conf RandomGeneratorConfig) *randomGenerator {
 	return &randomGenerator{
-		identityLen: conf.IdentityLen(),
+		identityLen: conf.IdentityLength(),
 	}
 }
 

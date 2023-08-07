@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
@@ -47,13 +48,13 @@ func NewCredentialEditCommand(
 	return command
 }
 
-func (c *credentialEditCommand) invoke(args map[string]string) error {
+func (c *credentialEditCommand) invoke(ctx context.Context, args map[string]string) error {
 	identity, ok := argValue(args, idFullArgName, idShortArgName)
 	if !ok {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	currentCred, err := c.storage.GetSecretById(nil, model.Credential, identity)
+	currentCred, err := c.storage.GetSecretById(ctx, model.Credential, identity)
 	if err != nil {
 		return logger.WrapError("get secret", err)
 	}
@@ -83,7 +84,7 @@ func (c *credentialEditCommand) invoke(args map[string]string) error {
 	}
 
 	logger.InfoFormat("Edit %s %s credential", userName, password)
-	err = c.storage.ChangeSecret(nil, currentCred)
+	err = c.storage.ChangeSecret(ctx, currentCred)
 	if err != nil {
 		return logger.WrapError("edit secret", err)
 	}

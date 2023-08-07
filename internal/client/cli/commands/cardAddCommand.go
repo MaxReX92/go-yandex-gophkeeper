@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -52,7 +53,7 @@ func NewCardAddCommand(
 	return command
 }
 
-func (c *cardAddCommand) invoke(args map[string]string) error {
+func (c *cardAddCommand) invoke(ctx context.Context, args map[string]string) error {
 	number, ok := argValue(args, numFullArgName, numShortArgName)
 	if !ok {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: card number is missed", c.name), cli.ErrRequiredArgNotFound)
@@ -86,7 +87,7 @@ func (c *cardAddCommand) invoke(args map[string]string) error {
 
 	card := secret.NewCardSecret(number, cvv, valid, c.generator.GenerateNewIdentity(), comment)
 	logger.InfoFormat("Add %s card", number)
-	err = c.storage.AddSecret(nil, card)
+	err = c.storage.AddSecret(ctx, card)
 	if err != nil {
 		return logger.WrapError("add secret", err)
 	}

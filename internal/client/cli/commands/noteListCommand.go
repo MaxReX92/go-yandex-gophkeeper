@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
@@ -40,8 +41,8 @@ func NewNoteListCommand(stream io.CommandStream, storage storage.ClientSecretsSt
 	return command
 }
 
-func (c *noteListCommand) invoke(args map[string]string) error {
-	notes, err := c.storage.GetAllSecrets(nil, model.Note)
+func (c *noteListCommand) invoke(ctx context.Context, args map[string]string) error {
+	notes, err := c.storage.GetAllSecrets(ctx, model.Note)
 	if err != nil {
 		return logger.WrapError("get secrets", err)
 	}

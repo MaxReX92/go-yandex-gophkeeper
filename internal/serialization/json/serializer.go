@@ -9,6 +9,10 @@ import (
 type jsonSerializer struct {
 }
 
+func NewSerializer() *jsonSerializer {
+	return &jsonSerializer{}
+}
+
 func (j *jsonSerializer) Serialize(obj interface{}) ([]byte, error) {
 	result, err := json.Marshal(obj)
 	if err != nil {

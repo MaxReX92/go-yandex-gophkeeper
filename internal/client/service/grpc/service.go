@@ -120,7 +120,7 @@ func (s *grpcService) receiveEvents(ctx context.Context, eventStream generated.S
 				if err != nil {
 					logger.ErrorFormat("failed to convert secret event: %v", err)
 				} else {
-					result <- &modelEvent
+					result <- modelEvent
 				}
 			}
 		}

@@ -36,5 +36,9 @@ message User {
 
 service SecretService {
   rpc Ping (Void) returns (Void);
+  rpc AddSecret(Secret) returns (Void);
+  rpc ChangeSecret(Secret) returns (Void);
+  rpc RemoveSecret(Secret) returns (Void);
+
   rpc SecretEvents (User) returns (stream SecretEvent);
 }

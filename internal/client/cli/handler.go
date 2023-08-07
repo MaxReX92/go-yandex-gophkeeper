@@ -34,7 +34,7 @@ func (h *handler) Start(ctx context.Context) error {
 				h.ioStream.Write(logger.WrapError("invoke command", err).Error())
 			}
 		case <-ctx.Done():
-			logger.Info("stopping...")
+			logger.Info("handler stopping...")
 			return ctx.Err()
 		}
 	}

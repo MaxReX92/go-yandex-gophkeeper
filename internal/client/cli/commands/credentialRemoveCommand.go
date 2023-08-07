@@ -49,7 +49,7 @@ func (c *credentialRemoveCommand) invoke(args map[string]string) error {
 	var toRemove []*secret.CredentialSecret
 	_, removeAll := argValue(args, allFullArgName)
 	if removeAll {
-		credential, err := c.storage.GetAllSecrets(model.Credential)
+		credential, err := c.storage.GetAllSecrets(nil, model.Credential)
 		if err != nil {
 			return logger.WrapError("get all secrets", err)
 		}
@@ -64,7 +64,7 @@ func (c *credentialRemoveCommand) invoke(args map[string]string) error {
 			return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 		}
 
-		credential, err := c.storage.GetSecretById(model.Credential, identity)
+		credential, err := c.storage.GetSecretById(nil, model.Credential, identity)
 		if err != nil {
 			return logger.WrapError("get secret", err)
 		}
@@ -74,7 +74,7 @@ func (c *credentialRemoveCommand) invoke(args map[string]string) error {
 
 	for _, cred := range toRemove {
 		logger.InfoFormat("Remove %s %s credential", cred.GetIdentity(), cred.UserName)
-		err := c.storage.RemoveSecret(cred)
+		err := c.storage.RemoveSecret(nil, cred)
 		if err != nil {
 			return logger.WrapError("remove secret", err)
 		}

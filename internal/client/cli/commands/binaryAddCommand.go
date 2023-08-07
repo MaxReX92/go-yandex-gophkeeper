@@ -93,7 +93,7 @@ func (c *binaryAddCommand) invoke(args map[string]string) error {
 
 	binary := secret.NewBinarySecret(name, reader, c.generator.GenerateNewIdentity(), comment)
 	logger.Info("Add binary")
-	err := c.storage.AddSecret(binary)
+	err := c.storage.AddSecret(nil, binary)
 	if err != nil {
 		return logger.WrapError("add secret", err)
 	}

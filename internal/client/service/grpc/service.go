@@ -13,16 +13,16 @@ import (
 )
 
 type GrpcServiceConfig interface {
-	GrpcServerURL() string
+	GrpcServerAddress() string
 }
 
 type grpcService struct {
 	client    generated.SecretServiceClient
-	converter grpc.Converter
+	converter *grpc.Converter
 }
 
-func NewService(conf GrpcServiceConfig, converter grpc.Converter) (*grpcService, error) {
-	connection, err := rpc.Dial(conf.GrpcServerURL(), rpc.WithTransportCredentials(insecure.NewCredentials()))
+func NewService(conf GrpcServiceConfig, converter *grpc.Converter) (*grpcService, error) {
+	connection, err := rpc.Dial(conf.GrpcServerAddress(), rpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, logger.WrapError("open grpc connection", err)
 	}
@@ -90,10 +90,10 @@ func (s *grpcService) SecretEvents(ctx context.Context) <-chan *model.SecretEven
 				eventStream, err := s.client.SecretEvents(ctx, &user)
 				if err != nil {
 					logger.ErrorFormat("failed to get events stream: %v", err)
-					continue
+				} else {
+					s.receiveEvents(ctx, eventStream, result)
 				}
 
-				s.receiveEvents(ctx, eventStream, result)
 				if ctx.Err() == nil {
 					time.Sleep(1 * time.Second)
 				}

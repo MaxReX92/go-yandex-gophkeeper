@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"os"
 	"os/signal"
 
@@ -10,12 +11,23 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/generator"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/generator/rand"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/service/grpc"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage/memory"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage/remote"
+	modelGrpc "github.com/MaxReX92/go-yandex-gophkeeper/internal/model/grpc"
+	internalJson "github.com/MaxReX92/go-yandex-gophkeeper/internal/serialization/json"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/runner"
+	"github.com/caarlos0/env/v7"
 )
+
+const defaultGrpcAddress = "127.0.0.1:3200"
+
+type config struct {
+	ConfigPath  string `env:"CONFIG"`
+	GrpcAddress string `env:"GRPC_ADDRESS" json:"grpc_address,omitempty"`
+}
 
 func main() {
 	// context
@@ -23,10 +35,10 @@ func main() {
 	defer cancel()
 
 	// config
-	//conf, err := createConfig()
-	//if err != nil {
-	//	panic(logger.WrapError("create config file", err))
-	//}
+	conf, err := createConfig()
+	if err != nil {
+		panic(logger.WrapError("create config", err))
+	}
 
 	// interrupt
 	interrupt := make(chan os.Signal, 1)
@@ -35,18 +47,28 @@ func main() {
 	// build app
 	ioStream := io.NewIOStream(os.Stdin, os.Stdout)
 	randomGenerator := rand.NewGenerator()
+	serializer := internalJson.NewSerializer()
+	converter := modelGrpc.NewConverter(serializer)
+	service, err := grpc.NewService(conf, converter)
+	if err != nil {
+		panic(logger.WrapError("create grpc service", err))
+	}
 	memoryStorage := memory.NewStorage()
-	remoteStorage := remote.NewStorage()
+	remoteStorage := remote.NewStorage(service)
+	supervisor := storage.NewStorageSupervisor(service, memoryStorage)
 	clientStorage := storage.NewStorageStrategy(memoryStorage, remoteStorage)
 	initialCommand := buildCommands(ioStream, randomGenerator, clientStorage)
 	handler := cli.NewHandler(ioStream, initialCommand)
-	app := runner.NewGracefulRunner(handler)
+	multiRunner := runner.NewMultiWorker(
+		supervisor,
+		handler,
+	)
+	app := runner.NewGracefulRunner(multiRunner)
 
 	// runtime
 	app.Start(ctx)
 
 	// shutdown
-	var err error
 	select {
 	case err = <-app.Error():
 		err = logger.WrapError("start application", err)
@@ -57,6 +79,30 @@ func main() {
 	if err != nil {
 		logger.ErrorObj(err)
 	}
+}
+
+func createConfig() (*config, error) {
+	conf := &config{}
+	err := env.Parse(conf)
+	if err != nil {
+		return nil, logger.WrapError("parse flags", err)
+	}
+	if conf.ConfigPath != "" {
+		content, err := os.ReadFile(conf.ConfigPath)
+		if err != nil {
+			return nil, logger.WrapError("read json config file", err)
+		}
+
+		err = json.Unmarshal(content, conf)
+		if err != nil {
+			return nil, logger.WrapError("unmarshal json config file", err)
+		}
+	}
+	if conf.GrpcAddress == "" {
+		conf.GrpcAddress = defaultGrpcAddress
+	}
+
+	return conf, nil
 }
 
 func buildCommands(
@@ -140,4 +186,8 @@ func buildCommands(
 		noteCommand,
 		statusCommand,
 	)
+}
+
+func (c *config) GrpcServerAddress() string {
+	return c.GrpcAddress
 }

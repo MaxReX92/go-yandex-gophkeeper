@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"context"
 	"sync"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
@@ -20,7 +21,7 @@ func NewStorage() *memoryStorage {
 	}
 }
 
-func (m *memoryStorage) AddSecret(secret model.Secret) error {
+func (m *memoryStorage) AddSecret(ctx context.Context, secret model.Secret) error {
 	m.lock.Lock()
 	defer m.lock.Unlock()
 
@@ -35,7 +36,7 @@ func (m *memoryStorage) AddSecret(secret model.Secret) error {
 	return nil
 }
 
-func (m *memoryStorage) ChangeSecret(secret model.Secret) error {
+func (m *memoryStorage) ChangeSecret(ctx context.Context, secret model.Secret) error {
 	m.lock.Lock()
 	defer m.lock.Unlock()
 
@@ -50,7 +51,7 @@ func (m *memoryStorage) ChangeSecret(secret model.Secret) error {
 	return nil
 }
 
-func (m *memoryStorage) GetSecretById(secretType model.SecretType, identity string) (model.Secret, error) {
+func (m *memoryStorage) GetSecretById(ctx context.Context, secretType model.SecretType, identity string) (model.Secret, error) {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
 
@@ -63,7 +64,7 @@ func (m *memoryStorage) GetSecretById(secretType model.SecretType, identity stri
 	return secret, nil
 }
 
-func (m *memoryStorage) GetAllSecrets(secretType model.SecretType) ([]model.Secret, error) {
+func (m *memoryStorage) GetAllSecrets(ctx context.Context, secretType model.SecretType) ([]model.Secret, error) {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
 
@@ -80,7 +81,7 @@ func (m *memoryStorage) GetAllSecrets(secretType model.SecretType) ([]model.Secr
 	return result, nil
 }
 
-func (m *memoryStorage) RemoveSecret(secret model.Secret) error {
+func (m *memoryStorage) RemoveSecret(ctx context.Context, secret model.Secret) error {
 	m.lock.Lock()
 	defer m.lock.Unlock()
 

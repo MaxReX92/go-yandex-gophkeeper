@@ -49,7 +49,7 @@ func (c *binaryRemoveCommand) invoke(args map[string]string) error {
 	var toRemove []*secret.BinarySecret
 	_, removeAll := argValue(args, allFullArgName)
 	if removeAll {
-		binaries, err := c.storage.GetAllSecrets(model.Binary)
+		binaries, err := c.storage.GetAllSecrets(nil, model.Binary)
 		if err != nil {
 			return logger.WrapError("get all secrets", err)
 		}
@@ -64,7 +64,7 @@ func (c *binaryRemoveCommand) invoke(args map[string]string) error {
 			return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 		}
 
-		binary, err := c.storage.GetSecretById(model.Binary, identity)
+		binary, err := c.storage.GetSecretById(nil, model.Binary, identity)
 		if err != nil {
 			return logger.WrapError("get secret", err)
 		}
@@ -74,7 +74,7 @@ func (c *binaryRemoveCommand) invoke(args map[string]string) error {
 
 	for _, binary := range toRemove {
 		logger.InfoFormat("Remove %s binary", binary.GetIdentity())
-		err := c.storage.RemoveSecret(binary)
+		err := c.storage.RemoveSecret(nil, binary)
 		if err != nil {
 			return logger.WrapError("remove secret", err)
 		}

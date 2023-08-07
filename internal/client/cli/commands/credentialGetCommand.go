@@ -47,7 +47,7 @@ func (c *credentialGetCommand) invoke(args map[string]string) error {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	credentialSecret, err := c.storage.GetSecretById(model.Credential, identity)
+	credentialSecret, err := c.storage.GetSecretById(nil, model.Credential, identity)
 	if err != nil {
 		return logger.WrapError("get credential secret", err)
 	}

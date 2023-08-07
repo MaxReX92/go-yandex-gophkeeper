@@ -27,7 +27,7 @@ func main() {
 	// config
 	conf, err := createConfig()
 	if err != nil {
-		panic(logger.WrapError("create config file", err))
+		panic(logger.WrapError("create config", err))
 	}
 
 	// interrupt

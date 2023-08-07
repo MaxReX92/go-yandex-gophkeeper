@@ -58,7 +58,7 @@ func (c *noteAddCommand) invoke(args map[string]string) error {
 
 	note := secret.NewNoteSecret(text, c.generator.GenerateNewIdentity(), comment)
 	logger.InfoFormat("Add %s note", note.Text)
-	err := c.storage.AddSecret(note)
+	err := c.storage.AddSecret(nil, note)
 	if err != nil {
 		return logger.WrapError("add secret", err)
 	}

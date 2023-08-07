@@ -64,7 +64,7 @@ func (c *credentialAddCommand) invoke(args map[string]string) error {
 	cred := secret.NewCredentialSecret(userName, password, c.generator.GenerateNewIdentity(), comment)
 
 	logger.InfoFormat("Add %s %s credential", userName, password)
-	err := c.storage.AddSecret(cred)
+	err := c.storage.AddSecret(nil, cred)
 	if err != nil {
 		return logger.WrapError("add secret", err)
 	}

@@ -56,7 +56,7 @@ func (c *cardEditCommand) invoke(args map[string]string) error {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	currentCard, err := c.storage.GetSecretById(model.Card, identity)
+	currentCard, err := c.storage.GetSecretById(nil, model.Card, identity)
 	if err != nil {
 		return logger.WrapError("get secret", err)
 	}
@@ -105,7 +105,7 @@ func (c *cardEditCommand) invoke(args map[string]string) error {
 	}
 
 	logger.InfoFormat("Edit %s card", number)
-	err = c.storage.ChangeSecret(card)
+	err = c.storage.ChangeSecret(nil, card)
 	if err != nil {
 		return logger.WrapError("edit secret", err)
 	}

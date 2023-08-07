@@ -57,7 +57,7 @@ func (c *binaryEditCommand) invoke(args map[string]string) error {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	currentBinary, err := c.storage.GetSecretById(model.Binary, identity)
+	currentBinary, err := c.storage.GetSecretById(nil, model.Binary, identity)
 	if err != nil {
 		return logger.WrapError("get secret", err)
 	}
@@ -108,7 +108,7 @@ func (c *binaryEditCommand) invoke(args map[string]string) error {
 	}
 
 	logger.Info("Edit binary")
-	err = c.storage.ChangeSecret(binary)
+	err = c.storage.ChangeSecret(nil, binary)
 	if err != nil {
 		return logger.WrapError("edit secret", err)
 	}

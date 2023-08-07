@@ -48,7 +48,7 @@ func (c *cardGetCommand) invoke(args map[string]string) error {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	cardSecret, err := c.storage.GetSecretById(model.Card, identity)
+	cardSecret, err := c.storage.GetSecretById(nil, model.Card, identity)
 	if err != nil {
 		return logger.WrapError("get card secret", err)
 	}

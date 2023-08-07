@@ -41,7 +41,7 @@ func NewNoteListCommand(stream io.CommandStream, storage storage.ClientSecretsSt
 }
 
 func (c *noteListCommand) invoke(args map[string]string) error {
-	notes, err := c.storage.GetAllSecrets(model.Note)
+	notes, err := c.storage.GetAllSecrets(nil, model.Note)
 	if err != nil {
 		return logger.WrapError("get secrets", err)
 	}
@@ -54,7 +54,7 @@ func (c *noteListCommand) invoke(args map[string]string) error {
 			value = note.Text
 		}
 
-		c.stream.Write(fmt.Sprintf("\t%s\t\t%s\t\t%s", note.GetIdentity(), value, note.GetComment()))
+		c.stream.Write(fmt.Sprintf("\t%s\t\t%s\t\t%s\n", note.GetIdentity(), value, note.GetComment()))
 	}
 
 	return nil

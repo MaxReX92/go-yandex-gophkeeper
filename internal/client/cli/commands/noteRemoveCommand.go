@@ -49,7 +49,7 @@ func (c *noteRemoveCommand) invoke(args map[string]string) error {
 	var toRemove []*secret.NoteSecret
 	_, removeAll := argValue(args, allFullArgName)
 	if removeAll {
-		note, err := c.storage.GetAllSecrets(model.Note)
+		note, err := c.storage.GetAllSecrets(nil, model.Note)
 		if err != nil {
 			return logger.WrapError("get all secrets", err)
 		}
@@ -64,7 +64,7 @@ func (c *noteRemoveCommand) invoke(args map[string]string) error {
 			return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 		}
 
-		note, err := c.storage.GetSecretById(model.Note, identity)
+		note, err := c.storage.GetSecretById(nil, model.Note, identity)
 		if err != nil {
 			return logger.WrapError("get secret", err)
 		}
@@ -74,7 +74,7 @@ func (c *noteRemoveCommand) invoke(args map[string]string) error {
 
 	for _, note := range toRemove {
 		logger.InfoFormat("Remove %s note", note.GetIdentity())
-		err := c.storage.RemoveSecret(note)
+		err := c.storage.RemoveSecret(nil, note)
 		if err != nil {
 			return logger.WrapError("remove secret", err)
 		}

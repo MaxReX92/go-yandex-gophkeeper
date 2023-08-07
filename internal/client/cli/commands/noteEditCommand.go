@@ -52,7 +52,7 @@ func (c *noteEditCommand) invoke(args map[string]string) error {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	currentNote, err := c.storage.GetSecretById(model.Note, identity)
+	currentNote, err := c.storage.GetSecretById(nil, model.Note, identity)
 	if err != nil {
 		return logger.WrapError("get secret", err)
 	}
@@ -77,7 +77,7 @@ func (c *noteEditCommand) invoke(args map[string]string) error {
 	}
 
 	logger.Info("Edit note")
-	err = c.storage.ChangeSecret(note)
+	err = c.storage.ChangeSecret(nil, note)
 	if err != nil {
 		return logger.WrapError("edit secret", err)
 	}

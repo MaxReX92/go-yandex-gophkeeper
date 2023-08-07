@@ -51,7 +51,7 @@ func (c *binaryGetCommand) invoke(args map[string]string) error {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	binarySecret, err := c.storage.GetSecretById(model.Binary, identity)
+	binarySecret, err := c.storage.GetSecretById(nil, model.Binary, identity)
 	if err != nil {
 		return logger.WrapError("get binary secret", err)
 	}

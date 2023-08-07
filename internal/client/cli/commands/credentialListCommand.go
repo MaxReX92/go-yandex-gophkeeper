@@ -41,7 +41,7 @@ func NewCredentialListCommand(stream io.CommandStream, storage storage.ClientSec
 }
 
 func (c *credentialListCommand) invoke(args map[string]string) error {
-	credentials, err := c.storage.GetAllSecrets(model.Credential)
+	credentials, err := c.storage.GetAllSecrets(nil, model.Credential)
 	if err != nil {
 		return logger.WrapError("get secrets", err)
 	}
@@ -54,7 +54,7 @@ func (c *credentialListCommand) invoke(args map[string]string) error {
 			value = cred.Password
 		}
 
-		c.stream.Write(fmt.Sprintf("\t%s\t\t%s\t\t%s\t\t%s", cred.GetIdentity(), cred.UserName, value, cred.GetComment()))
+		c.stream.Write(fmt.Sprintf("\t%s\t\t%s\t\t%s\t\t%s\n", cred.GetIdentity(), cred.UserName, value, cred.GetComment()))
 	}
 
 	return nil

@@ -42,7 +42,7 @@ func NewCardListCommand(stream io.CommandStream, storage storage.ClientSecretsSt
 }
 
 func (c *cardListCommand) invoke(args map[string]string) error {
-	cards, err := c.storage.GetAllSecrets(model.Card)
+	cards, err := c.storage.GetAllSecrets(nil, model.Card)
 	if err != nil {
 		return logger.WrapError("get secrets", err)
 	}
@@ -55,7 +55,7 @@ func (c *cardListCommand) invoke(args map[string]string) error {
 			value = parser.Int32ToString(card.CVV)
 		}
 
-		c.stream.Write(fmt.Sprintf("\t%s\t\t%s\t\t%s\t\t%s\t\t%s", card.GetIdentity(), card.Number, card.Valid, value, card.GetComment()))
+		c.stream.Write(fmt.Sprintf("\t%s\t\t%s\t\t%s\t\t%s\t\t%s\n", card.GetIdentity(), card.Number, card.Valid, value, card.GetComment()))
 	}
 
 	return nil

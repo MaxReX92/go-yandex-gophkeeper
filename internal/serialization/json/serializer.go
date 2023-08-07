@@ -15,6 +15,7 @@ func NewSerializer() *jsonSerializer {
 
 func (j *jsonSerializer) Serialize(obj interface{}) ([]byte, error) {
 	result, err := json.Marshal(obj)
+	logger.InfoFormat("SERIALIZED: %s", string(result))
 	if err != nil {
 		return nil, logger.WrapError("serialize object", err)
 	}

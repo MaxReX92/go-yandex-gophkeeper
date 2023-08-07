@@ -39,14 +39,14 @@ func NewBinaryListCommand(stream io.CommandStream, storage storage.ClientSecrets
 }
 
 func (c *binaryListCommand) invoke(args map[string]string) error {
-	binaries, err := c.storage.GetAllSecrets(model.Binary)
+	binaries, err := c.storage.GetAllSecrets(nil, model.Binary)
 	if err != nil {
 		return logger.WrapError("get secrets", err)
 	}
 
 	for _, modelBinary := range binaries {
 		binary := modelBinary.(*secret.BinarySecret)
-		c.stream.Write(fmt.Sprintf("\t%s\t\t%s\t\t%s\t\t%s\t\t%s", binary.GetIdentity(), binary.Name, binary.GetComment()))
+		c.stream.Write(fmt.Sprintf("\t%s\t\t%s\t\t%s\t\t%s\t\t%s\n", binary.GetIdentity(), binary.Name, binary.GetComment()))
 	}
 
 	return nil

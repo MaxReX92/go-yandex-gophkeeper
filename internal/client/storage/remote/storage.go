@@ -1,35 +1,56 @@
 package remote
 
-import "github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
+import (
+	"context"
+
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/service"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
+	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
+)
 
 type remoteStorage struct {
+	service service.SecretService
 }
 
-func NewStorage() *remoteStorage {
-	return &remoteStorage{}
+func NewStorage(service service.SecretService) *remoteStorage {
+	return &remoteStorage{
+		service: service,
+	}
 }
 
-func (r *remoteStorage) AddSecret(secret model.Secret) error {
+func (r *remoteStorage) AddSecret(ctx context.Context, secret model.Secret) error {
+	err := r.service.AddSecret(ctx, secret)
+	if err != nil {
+		return logger.WrapError("send secret service add request", err)
+	}
+
+	return nil
+}
+
+func (r *remoteStorage) ChangeSecret(ctx context.Context, secret model.Secret) error {
+	err := r.service.ChangeSecret(ctx, secret)
+	if err != nil {
+		return logger.WrapError("send secret service change request", err)
+	}
+
+	return nil
+}
+
+func (r *remoteStorage) GetSecretById(ctx context.Context, secretType model.SecretType, identity string) (model.Secret, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (r *remoteStorage) ChangeSecret(secret model.Secret) error {
+func (r *remoteStorage) GetAllSecrets(ctx context.Context, secretType model.SecretType) ([]model.Secret, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (r *remoteStorage) GetSecretById(secretType model.SecretType, identity string) (model.Secret, error) {
-	//TODO implement me
-	panic("implement me")
-}
+func (r *remoteStorage) RemoveSecret(ctx context.Context, secret model.Secret) error {
+	err := r.service.RemoveSecret(ctx, secret)
+	if err != nil {
+		return logger.WrapError("send secret service change request", err)
+	}
 
-func (r *remoteStorage) GetAllSecrets(secretType model.SecretType) ([]model.Secret, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (r *remoteStorage) RemoveSecret(secret model.Secret) error {
-	//TODO implement me
-	panic("implement me")
+	return nil
 }

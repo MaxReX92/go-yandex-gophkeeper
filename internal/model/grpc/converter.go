@@ -24,13 +24,13 @@ func (c *Converter) ToModelSecret(generatedSecret *generated.Secret) (model.Secr
 	secretType := generatedSecret.Type
 	switch secretType {
 	case generated.SecretType_BINARY:
-		return c.toModelSecret(generatedSecret, secret.BinarySecret{})
+		return c.toModelSecret(generatedSecret, &secret.BinarySecret{})
 	case generated.SecretType_CARD:
-		return c.toModelSecret(generatedSecret, secret.CardSecret{})
+		return c.toModelSecret(generatedSecret, &secret.CardSecret{})
 	case generated.SecretType_CREDENTIAL:
-		return c.toModelSecret(generatedSecret, secret.CredentialSecret{})
+		return c.toModelSecret(generatedSecret, &secret.CredentialSecret{})
 	case generated.SecretType_NOTE:
-		return c.toModelSecret(generatedSecret, secret.NoteSecret{})
+		return c.toModelSecret(generatedSecret, &secret.NoteSecret{})
 	default:
 		return nil, logger.WrapError(fmt.Sprintf("convert secret with type %v", secretType), model.ErrUnknownType)
 	}

@@ -86,7 +86,7 @@ func (c *cardAddCommand) invoke(args map[string]string) error {
 
 	card := secret.NewCardSecret(number, cvv, valid, c.generator.GenerateNewIdentity(), comment)
 	logger.InfoFormat("Add %s card", number)
-	err = c.storage.AddSecret(card)
+	err = c.storage.AddSecret(nil, card)
 	if err != nil {
 		return logger.WrapError("add secret", err)
 	}

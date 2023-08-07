@@ -47,7 +47,7 @@ func (c *noteGetCommand) invoke(args map[string]string) error {
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	noteSecret, err := c.storage.GetSecretById(model.Note, identity)
+	noteSecret, err := c.storage.GetSecretById(nil, model.Note, identity)
 	if err != nil {
 		return logger.WrapError("get secrets", err)
 	}

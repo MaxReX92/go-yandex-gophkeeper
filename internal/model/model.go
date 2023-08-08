@@ -1,7 +1,9 @@
 package model
 
-type SecretType int32
-type EventType int32
+type (
+	SecretType int32
+	EventType  int32
+)
 
 const (
 	Binary     SecretType = 0

@@ -6,8 +6,7 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
-type jsonSerializer struct {
-}
+type jsonSerializer struct{}
 
 func NewSerializer() *jsonSerializer {
 	return &jsonSerializer{}

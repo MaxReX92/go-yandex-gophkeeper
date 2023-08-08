@@ -43,7 +43,7 @@ func main() {
 	}
 
 	// init logger
-	logFile, err := os.OpenFile(conf.LogsPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	logFile, err := os.OpenFile(conf.LogsPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o666)
 	if err != nil {
 		panic(logger.WrapError("error opening log file", err))
 	}

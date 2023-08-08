@@ -93,6 +93,7 @@ func (g *grpcServer) ChangeSecret(ctx context.Context, request *generated.Secret
 
 	return &generated.Void{}, nil
 }
+
 func (g *grpcServer) RemoveSecret(ctx context.Context, request *generated.SecretRequest) (*generated.Void, error) {
 	err := g.storage.RemoveSecret(ctx, request.User.Identity, request.Secret)
 	if err != nil {

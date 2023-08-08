@@ -37,12 +37,12 @@ func (r *remoteStorage) ChangeSecret(ctx context.Context, secret model.Secret) e
 }
 
 func (r *remoteStorage) GetSecretById(ctx context.Context, secretType model.SecretType, identity string) (model.Secret, error) {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 
 func (r *remoteStorage) GetAllSecrets(ctx context.Context, secretType model.SecretType) ([]model.Secret, error) {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 

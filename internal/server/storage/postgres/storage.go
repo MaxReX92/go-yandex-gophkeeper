@@ -105,7 +105,6 @@ func (d *dbStorage) GetAllSecrets(ctx context.Context, userId string) ([]*genera
 
 		return secrets, nil
 	})
-
 	if err != nil {
 		return nil, logger.WrapError("get all user secrets", err)
 	}

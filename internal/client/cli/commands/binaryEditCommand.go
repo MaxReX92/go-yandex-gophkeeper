@@ -43,7 +43,7 @@ func NewBinaryEditCommand(
 		binaryEditFullDescription,
 		children,
 		[]cli.Argument{
-			newArgument("Secret identity", true, initialFullDescription, initialShortDescription),
+			newArgument("Secret identity", true, idFullArgName, idShortArgName),
 			newArgument("Binary text", true, textFullArgName, textShortArgName),
 			newArgument("Comment", true, commentFullArgName, commentShortArgName),
 		},

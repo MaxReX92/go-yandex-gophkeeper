@@ -10,7 +10,7 @@ type NoteSecret struct {
 
 func NewNoteSecret(text string, identity string, comment string) *NoteSecret {
 	return &NoteSecret{
-		BaseSecret: newBaseSecret(identity, model.Credential, comment),
+		BaseSecret: newBaseSecret(identity, model.Note, comment),
 		Text:       text,
 	}
 }

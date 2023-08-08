@@ -70,7 +70,7 @@ func (s *grpcService) RemoveSecret(ctx context.Context, secret model.Secret) err
 		return logger.WrapError("convert model secret", err)
 	}
 
-	_, err = s.client.ChangeSecret(ctx, s.createSecretRequest(grpcSecret))
+	_, err = s.client.RemoveSecret(ctx, s.createSecretRequest(grpcSecret))
 	if err != nil {
 		return logger.WrapError("send remove secret request", err)
 	}

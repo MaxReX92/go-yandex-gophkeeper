@@ -15,7 +15,7 @@ type BinarySecret struct {
 
 func NewBinarySecret(name string, reader io.Reader, identity string, comment string) *BinarySecret {
 	return &BinarySecret{
-		BaseSecret: newBaseSecret(identity, model.Credential, comment),
+		BaseSecret: newBaseSecret(identity, model.Binary, comment),
 		Name:       name,
 		Reader:     reader,
 	}

@@ -82,13 +82,9 @@ func (d *dbStorage) GetAllSecrets(ctx context.Context, userId string) ([]*genera
 
 		rows, err := tx.QueryContext(ctx, command, userId)
 		if err != nil {
-			return nil, logger.WrapError("call get car query", err)
+			return nil, logger.WrapError("call get all secrets query", err)
 		}
 		defer rows.Close()
-
-		if !rows.Next() {
-			return nil, rows.Err()
-		}
 
 		secrets := []any{}
 		for rows.Next() {
@@ -145,7 +141,7 @@ func (d *dbStorage) GetAllSecrets(ctx context.Context, userId string) ([]*genera
 
 func (d *dbStorage) RemoveSecret(ctx context.Context, userId string, secret *generated.Secret) error {
 	return d.callInTransaction(ctx, func(ctx context.Context, tx *sql.Tx) error {
-		command := "DELETE secret " +
+		command := "DELETE from secret " +
 			"WHERE id = $1 and userId = $2"
 		_, err := tx.ExecContext(ctx, command, secret.Identity, userId)
 		if err != nil {

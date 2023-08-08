@@ -40,7 +40,7 @@ func NewCardEditCommand(
 		cardEditFullDescription,
 		children,
 		[]cli.Argument{
-			newArgument("Secret identity", true, initialFullDescription, initialShortDescription),
+			newArgument("Secret identity", true, idFullArgName, idShortArgName),
 			newArgument("Card number", true, numFullArgName, numShortArgName),
 			newArgument("CVV", true, cvvFullArgName),
 			newArgument("Valid thru date (MM/YY)", true, validThruFullArgName, validThruShortArgName),

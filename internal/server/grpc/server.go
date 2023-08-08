@@ -24,6 +24,7 @@ type grpcServer struct {
 	generated.UnimplementedSecretServiceServer
 
 	listenAddress string
+	events        chan *model.SecretEvent
 	converter     *grpc.Converter
 	server        *rpc.Server
 }
@@ -31,6 +32,7 @@ type grpcServer struct {
 func NewGrpcServer(conf GrpcServerConfig, converter *grpc.Converter) *grpcServer {
 	return &grpcServer{
 		listenAddress: conf.GrpcAddress(),
+		events:        make(chan *model.SecretEvent),
 		converter:     converter,
 		server:        rpc.NewServer(),
 	}
@@ -74,6 +76,9 @@ func (g *grpcServer) RemoveSecret(context.Context, *generated.Secret) (*generate
 
 func (g *grpcServer) SecretEvents(user *generated.User, stream generated.SecretService_SecretEventsServer) error {
 	ticker := time.NewTicker(1 * time.Second)
+
+	// TODO: выгрузить все секреты конкретного юзера, в отдельной горутине, которрая будет ходить в базу и писать в канал
+	// user.id
 
 	for i := 0; ; i++ {
 		select {

@@ -1,0 +1,49 @@
+version: "3.9"
+
+x-common-variables: &common-variables
+  DATABASE_DSN: 'host=postgres user=postgres database=secrets password=postgres'
+
+services:
+  postgres:
+    container_name: postgres_container
+    profiles:
+      - devops
+    image: postgres:15.2
+    environment:
+      POSTGRES_DB: "secrets"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./scripts/postgresql:/docker-entrypoint-initdb.d
+      - ./.data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  pgadmin:
+    container_name: pgadmin_container
+    profiles:
+      - devops
+    image: dpage/pgadmin4:7.1
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: postgres@email.ru
+      PGADMIN_DEFAULT_PASSWORD: "postgres"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - ./.data/pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512Mb

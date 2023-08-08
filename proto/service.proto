@@ -21,7 +21,8 @@ enum SecretType {
 
 message Secret {
   string identity = 1;
-  bytes content = 2;
+  SecretType type = 2;
+  bytes content = 3;
 }
 
 message SecretEvent {

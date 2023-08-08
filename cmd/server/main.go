@@ -9,6 +9,7 @@ import (
 	modelGrpc "github.com/MaxReX92/go-yandex-gophkeeper/internal/model/grpc"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/serialization/json"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/server/grpc"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/server/storage/postgres"
 	"github.com/caarlos0/env/v7"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
@@ -16,7 +17,8 @@ import (
 )
 
 type config struct {
-	ListenAddress string `env:"LISTEN_ADDRESS" json:"listen_address,omitempty"`
+	ListenAddress            string `env:"LISTEN_ADDRESS" json:"listen_address,omitempty"`
+	PostgresConnectionString string `env:"DATABASE_DSN" json:"database_dsn,omitempty"`
 }
 
 func main() {
@@ -37,7 +39,11 @@ func main() {
 	// build app
 	serializer := json.NewSerializer()
 	converter := modelGrpc.NewConverter(serializer)
-	server := grpc.NewGrpcServer(conf, converter)
+	dbStorage, err := postgres.NewDBStorage(ctx, conf)
+	if err != nil {
+		panic(logger.WrapError("create db storage", err))
+	}
+	server := grpc.NewGrpcServer(conf, dbStorage, converter)
 	app := runner.NewGracefulRunner(server)
 
 	// runtime
@@ -60,6 +66,7 @@ func createConfig() (*config, error) {
 	conf := &config{}
 
 	flag.StringVar(&conf.ListenAddress, "l", "127.0.0.1:3200", "Server grpc URL")
+	flag.StringVar(&conf.PostgresConnectionString, "d", "host=localhost user=postgres database=secrets password=postgres", "Database connection stirng")
 	flag.Parse()
 
 	err := env.Parse(conf)
@@ -72,4 +79,8 @@ func createConfig() (*config, error) {
 
 func (c *config) GrpcAddress() string {
 	return c.ListenAddress
+}
+
+func (c *config) ConnectionString() string {
+	return c.PostgresConnectionString
 }

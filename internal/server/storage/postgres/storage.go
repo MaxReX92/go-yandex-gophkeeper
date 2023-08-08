@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/server/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -16,9 +17,10 @@ type PostgresDBStorageConfig interface {
 }
 
 type dbSecret struct {
-	Identity     sql.NullString
-	UserIdentity sql.NullString
-	Content      sql.RawBytes
+	ID      sql.NullString
+	UserID  sql.NullString
+	Type    sql.NullString
+	Content sql.RawBytes
 }
 
 type dbStorage struct {
@@ -43,8 +45,13 @@ func NewDBStorage(ctx context.Context, conf PostgresDBStorageConfig) (*dbStorage
 
 func (d *dbStorage) AddSecret(ctx context.Context, userId string, secret *generated.Secret) error {
 	return d.callInTransaction(ctx, func(ctx context.Context, tx *sql.Tx) error {
-		command := "INSERT INTO secret VALUES ($1, $2, $3)"
-		_, err := tx.ExecContext(ctx, command, secret.Identity, userId, secret.Content)
+		typeName, err := d.toTypeName(secret.Type)
+		if err != nil {
+			return logger.WrapError("convert secret type", err)
+		}
+
+		command := "INSERT INTO secret VALUES ($1, $2, $3, $4)"
+		_, err = tx.ExecContext(ctx, command, secret.Identity, userId, typeName, secret.Content)
 		if err != nil {
 			return logger.WrapError("call add user query", err)
 		}
@@ -69,7 +76,7 @@ func (d *dbStorage) ChangeSecret(ctx context.Context, userId string, secret *gen
 
 func (d *dbStorage) GetAllSecrets(ctx context.Context, userId string) ([]*generated.Secret, error) {
 	result, err := d.callInTransactionResult(ctx, func(ctx context.Context, tx *sql.Tx) ([]any, error) {
-		command := "SELECT s.id, s.userId, s.content " +
+		command := "SELECT s.id, s.userId, s.type, s.content " +
 			"FROM secret s " +
 			"WHERE s.userId = $1"
 
@@ -86,7 +93,7 @@ func (d *dbStorage) GetAllSecrets(ctx context.Context, userId string) ([]*genera
 		secrets := []any{}
 		for rows.Next() {
 			var secret dbSecret
-			err = rows.Scan(&secret.Identity, &secret.UserIdentity, &secret.Content)
+			err = rows.Scan(&secret.ID, &secret.UserID, &secret.Type, &secret.Content)
 			if err != nil {
 				return nil, logger.WrapError("scan rows", err)
 			}
@@ -111,15 +118,24 @@ func (d *dbStorage) GetAllSecrets(ctx context.Context, userId string) ([]*genera
 	for i := 0; i < secretsLen; i++ {
 		dSecret := result[i].(dbSecret)
 
-		if !dSecret.Identity.Valid {
+		if !dSecret.ID.Valid {
 			return nil, logger.WrapError("read secret id", storage.ErrInvalidDBValue)
 		}
-		if !dSecret.UserIdentity.Valid {
+		if !dSecret.UserID.Valid {
+			return nil, logger.WrapError("read secret user id", storage.ErrInvalidDBValue)
+		}
+		if !dSecret.Type.Valid {
 			return nil, logger.WrapError("read secret user id", storage.ErrInvalidDBValue)
 		}
 
+		secretType, err := d.toType(dSecret.Type.String)
+		if err != nil {
+			return nil, logger.WrapError("convert type", err)
+		}
+
 		secrets[i] = &generated.Secret{
-			Identity: dSecret.Identity.String,
+			Identity: dSecret.ID.String,
+			Type:     secretType,
 			Content:  dSecret.Content,
 		}
 	}
@@ -170,4 +186,34 @@ func (d *dbStorage) callInTransactionResult(ctx context.Context, action func(con
 	}
 
 	return result, nil
+}
+
+func (d *dbStorage) toTypeName(secretType generated.SecretType) (string, error) {
+	switch secretType {
+	case generated.SecretType_BINARY:
+		return "binary", nil
+	case generated.SecretType_CARD:
+		return "card", nil
+	case generated.SecretType_CREDENTIAL:
+		return "cred", nil
+	case generated.SecretType_NOTE:
+		return "note", nil
+	default:
+		return "", model.ErrUnknownType
+	}
+}
+
+func (d *dbStorage) toType(secretType string) (generated.SecretType, error) {
+	switch secretType {
+	case "binary":
+		return generated.SecretType_BINARY, nil
+	case "card":
+		return generated.SecretType_CARD, nil
+	case "cred":
+		return generated.SecretType_CREDENTIAL, nil
+	case "note":
+		return generated.SecretType_NOTE, nil
+	default:
+		return -1, model.ErrUnknownType
+	}
 }

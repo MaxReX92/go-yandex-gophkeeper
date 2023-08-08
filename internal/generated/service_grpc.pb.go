@@ -31,9 +31,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SecretServiceClient interface {
 	Ping(ctx context.Context, in *Void, opts ...grpc.CallOption) (*Void, error)
-	AddSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*Void, error)
-	ChangeSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*Void, error)
-	RemoveSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*Void, error)
+	AddSecret(ctx context.Context, in *SecretRequest, opts ...grpc.CallOption) (*Void, error)
+	ChangeSecret(ctx context.Context, in *SecretRequest, opts ...grpc.CallOption) (*Void, error)
+	RemoveSecret(ctx context.Context, in *SecretRequest, opts ...grpc.CallOption) (*Void, error)
 	SecretEvents(ctx context.Context, in *User, opts ...grpc.CallOption) (SecretService_SecretEventsClient, error)
 }
 
@@ -54,7 +54,7 @@ func (c *secretServiceClient) Ping(ctx context.Context, in *Void, opts ...grpc.C
 	return out, nil
 }
 
-func (c *secretServiceClient) AddSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*Void, error) {
+func (c *secretServiceClient) AddSecret(ctx context.Context, in *SecretRequest, opts ...grpc.CallOption) (*Void, error) {
 	out := new(Void)
 	err := c.cc.Invoke(ctx, SecretService_AddSecret_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -63,7 +63,7 @@ func (c *secretServiceClient) AddSecret(ctx context.Context, in *Secret, opts ..
 	return out, nil
 }
 
-func (c *secretServiceClient) ChangeSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*Void, error) {
+func (c *secretServiceClient) ChangeSecret(ctx context.Context, in *SecretRequest, opts ...grpc.CallOption) (*Void, error) {
 	out := new(Void)
 	err := c.cc.Invoke(ctx, SecretService_ChangeSecret_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -72,7 +72,7 @@ func (c *secretServiceClient) ChangeSecret(ctx context.Context, in *Secret, opts
 	return out, nil
 }
 
-func (c *secretServiceClient) RemoveSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*Void, error) {
+func (c *secretServiceClient) RemoveSecret(ctx context.Context, in *SecretRequest, opts ...grpc.CallOption) (*Void, error) {
 	out := new(Void)
 	err := c.cc.Invoke(ctx, SecretService_RemoveSecret_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -118,9 +118,9 @@ func (x *secretServiceSecretEventsClient) Recv() (*SecretEvent, error) {
 // for forward compatibility
 type SecretServiceServer interface {
 	Ping(context.Context, *Void) (*Void, error)
-	AddSecret(context.Context, *Secret) (*Void, error)
-	ChangeSecret(context.Context, *Secret) (*Void, error)
-	RemoveSecret(context.Context, *Secret) (*Void, error)
+	AddSecret(context.Context, *SecretRequest) (*Void, error)
+	ChangeSecret(context.Context, *SecretRequest) (*Void, error)
+	RemoveSecret(context.Context, *SecretRequest) (*Void, error)
 	SecretEvents(*User, SecretService_SecretEventsServer) error
 	mustEmbedUnimplementedSecretServiceServer()
 }
@@ -132,13 +132,13 @@ type UnimplementedSecretServiceServer struct {
 func (UnimplementedSecretServiceServer) Ping(context.Context, *Void) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
-func (UnimplementedSecretServiceServer) AddSecret(context.Context, *Secret) (*Void, error) {
+func (UnimplementedSecretServiceServer) AddSecret(context.Context, *SecretRequest) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddSecret not implemented")
 }
-func (UnimplementedSecretServiceServer) ChangeSecret(context.Context, *Secret) (*Void, error) {
+func (UnimplementedSecretServiceServer) ChangeSecret(context.Context, *SecretRequest) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeSecret not implemented")
 }
-func (UnimplementedSecretServiceServer) RemoveSecret(context.Context, *Secret) (*Void, error) {
+func (UnimplementedSecretServiceServer) RemoveSecret(context.Context, *SecretRequest) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveSecret not implemented")
 }
 func (UnimplementedSecretServiceServer) SecretEvents(*User, SecretService_SecretEventsServer) error {
@@ -176,7 +176,7 @@ func _SecretService_Ping_Handler(srv interface{}, ctx context.Context, dec func(
 }
 
 func _SecretService_AddSecret_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Secret)
+	in := new(SecretRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -188,13 +188,13 @@ func _SecretService_AddSecret_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: SecretService_AddSecret_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SecretServiceServer).AddSecret(ctx, req.(*Secret))
+		return srv.(SecretServiceServer).AddSecret(ctx, req.(*SecretRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _SecretService_ChangeSecret_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Secret)
+	in := new(SecretRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -206,13 +206,13 @@ func _SecretService_ChangeSecret_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: SecretService_ChangeSecret_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SecretServiceServer).ChangeSecret(ctx, req.(*Secret))
+		return srv.(SecretServiceServer).ChangeSecret(ctx, req.(*SecretRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _SecretService_RemoveSecret_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Secret)
+	in := new(SecretRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -224,7 +224,7 @@ func _SecretService_RemoveSecret_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: SecretService_RemoveSecret_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SecretServiceServer).RemoveSecret(ctx, req.(*Secret))
+		return srv.(SecretServiceServer).RemoveSecret(ctx, req.(*SecretRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

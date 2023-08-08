@@ -34,11 +34,16 @@ message User {
   string identity = 1;
 }
 
+message SecretRequest {
+  User user = 1;
+  Secret secret = 2;
+}
+
 service SecretService {
   rpc Ping (Void) returns (Void);
-  rpc AddSecret(Secret) returns (Void);
-  rpc ChangeSecret(Secret) returns (Void);
-  rpc RemoveSecret(Secret) returns (Void);
+  rpc AddSecret(SecretRequest) returns (Void);
+  rpc ChangeSecret(SecretRequest) returns (Void);
+  rpc RemoveSecret(SecretRequest) returns (Void);
 
   rpc SecretEvents (User) returns (stream SecretEvent);
 }

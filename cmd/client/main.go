@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli/commands"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/generator"
@@ -57,7 +58,8 @@ func main() {
 	randomGenerator := rand.NewGenerator(conf)
 	serializer := internalJson.NewSerializer()
 	converter := modelGrpc.NewConverter(serializer)
-	service, err := grpc.NewService(conf, converter)
+	credentials := auth.NewCredentials("test_user")
+	service, err := grpc.NewService(conf, credentials, converter)
 	if err != nil {
 		panic(logger.WrapError("create grpc service", err))
 	}

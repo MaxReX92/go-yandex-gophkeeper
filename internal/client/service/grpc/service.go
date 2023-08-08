@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/generated"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/grpc"
@@ -17,19 +18,21 @@ type GrpcServiceConfig interface {
 }
 
 type grpcService struct {
-	client    generated.SecretServiceClient
-	converter *grpc.Converter
+	client      generated.SecretServiceClient
+	credentials auth.Credentials
+	converter   *grpc.Converter
 }
 
-func NewService(conf GrpcServiceConfig, converter *grpc.Converter) (*grpcService, error) {
+func NewService(conf GrpcServiceConfig, credentials auth.Credentials, converter *grpc.Converter) (*grpcService, error) {
 	connection, err := rpc.Dial(conf.GrpcServerAddress(), rpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, logger.WrapError("open grpc connection", err)
 	}
 
 	return &grpcService{
-		client:    generated.NewSecretServiceClient(connection),
-		converter: converter,
+		client:      generated.NewSecretServiceClient(connection),
+		credentials: credentials,
+		converter:   converter,
 	}, nil
 }
 
@@ -39,7 +42,7 @@ func (s *grpcService) AddSecret(ctx context.Context, secret model.Secret) error 
 		return logger.WrapError("convert model secret", err)
 	}
 
-	_, err = s.client.AddSecret(ctx, grpcSecret)
+	_, err = s.client.AddSecret(ctx, s.createSecretRequest(grpcSecret))
 	if err != nil {
 		return logger.WrapError("send add secret request", err)
 	}
@@ -53,7 +56,7 @@ func (s *grpcService) ChangeSecret(ctx context.Context, secret model.Secret) err
 		return logger.WrapError("convert model secret", err)
 	}
 
-	_, err = s.client.ChangeSecret(ctx, grpcSecret)
+	_, err = s.client.ChangeSecret(ctx, s.createSecretRequest(grpcSecret))
 	if err != nil {
 		return logger.WrapError("send edit secret request", err)
 	}
@@ -67,7 +70,7 @@ func (s *grpcService) RemoveSecret(ctx context.Context, secret model.Secret) err
 		return logger.WrapError("convert model secret", err)
 	}
 
-	_, err = s.client.ChangeSecret(ctx, grpcSecret)
+	_, err = s.client.ChangeSecret(ctx, s.createSecretRequest(grpcSecret))
 	if err != nil {
 		return logger.WrapError("send remove secret request", err)
 	}
@@ -86,7 +89,7 @@ func (s *grpcService) SecretEvents(ctx context.Context) <-chan *model.SecretEven
 				logger.Info("Done")
 				return
 			default:
-				user := generated.User{Identity: "qwe"}
+				user := generated.User{Identity: s.credentials.GetUserName()}
 				eventStream, err := s.client.SecretEvents(ctx, &user)
 				if err != nil {
 					logger.ErrorFormat("failed to get events stream: %v", err)
@@ -124,5 +127,12 @@ func (s *grpcService) receiveEvents(ctx context.Context, eventStream generated.S
 				}
 			}
 		}
+	}
+}
+
+func (s *grpcService) createSecretRequest(secret *generated.Secret) *generated.SecretRequest {
+	return &generated.SecretRequest{
+		User:   &generated.User{Identity: s.credentials.GetUserName()},
+		Secret: secret,
 	}
 }

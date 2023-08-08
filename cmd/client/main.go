@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/caarlos0/env/v7"
+
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli/commands"
@@ -20,7 +22,6 @@ import (
 	internalJson "github.com/MaxReX92/go-yandex-gophkeeper/internal/serialization/json"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/runner"
-	"github.com/caarlos0/env/v7"
 )
 
 type config struct {

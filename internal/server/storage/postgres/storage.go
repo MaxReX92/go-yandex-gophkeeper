@@ -4,10 +4,11 @@ import (
 	"context"
 	"database/sql"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
+
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/server/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
-	_ "github.com/jackc/pgx/v5/stdlib"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/generated"
 )

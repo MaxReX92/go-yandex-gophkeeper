@@ -4,8 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/parser"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/parser"
 )
 
 func TestToFloat64(t *testing.T) {

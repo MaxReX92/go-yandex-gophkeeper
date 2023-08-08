@@ -4,13 +4,14 @@ import (
 	"context"
 	"time"
 
+	rpc "google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/generated"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/grpc"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
-	rpc "google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 type GrpcServiceConfig interface {

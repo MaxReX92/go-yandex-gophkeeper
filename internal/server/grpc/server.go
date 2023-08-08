@@ -5,12 +5,13 @@ import (
 	"net"
 	"sync"
 
+	"golang.org/x/sync/errgroup"
+	rpc "google.golang.org/grpc"
+
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/generated"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/grpc"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/server/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
-	"golang.org/x/sync/errgroup"
-	rpc "google.golang.org/grpc"
 )
 
 type GrpcServerConfig interface {

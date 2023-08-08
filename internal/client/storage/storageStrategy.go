@@ -37,8 +37,8 @@ func (s *storageStrategy) ChangeSecret(ctx context.Context, secret model.Secret)
 	return nil
 }
 
-func (s *storageStrategy) GetSecretById(ctx context.Context, secretType model.SecretType, identity string) (model.Secret, error) {
-	return s.memoryStorage.GetSecretById(ctx, secretType, identity)
+func (s *storageStrategy) GetSecretByID(ctx context.Context, secretType model.SecretType, identity string) (model.Secret, error) {
+	return s.memoryStorage.GetSecretByID(ctx, secretType, identity)
 }
 
 func (s *storageStrategy) GetAllSecrets(ctx context.Context, secretType model.SecretType) ([]model.Secret, error) {

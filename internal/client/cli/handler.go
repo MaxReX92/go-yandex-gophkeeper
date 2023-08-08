@@ -29,7 +29,7 @@ func (h *handler) Start(ctx context.Context) error {
 				continue
 			}
 
-			err := h.initialCommand.Invoke(ctx, strings.SplitN(message, " ", -1))
+			err := h.initialCommand.Invoke(ctx, strings.Split(message, " "))
 			if err != nil {
 				h.ioStream.Write(logger.WrapError("invoke command", err).Error())
 			}

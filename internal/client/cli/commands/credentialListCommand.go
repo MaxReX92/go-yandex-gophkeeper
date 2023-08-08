@@ -50,7 +50,7 @@ func (c *credentialListCommand) invoke(ctx context.Context, args map[string]stri
 	_, reveal := argValue(args, revealFullArgName, revealShortArgName)
 	for _, modelCredential := range credentials {
 		cred := modelCredential.(*secret.CredentialSecret)
-		value := "***"
+		value := hiddenValue
 		if reveal {
 			value = cred.Password
 		}

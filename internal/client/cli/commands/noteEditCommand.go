@@ -53,7 +53,7 @@ func (c *noteEditCommand) invoke(ctx context.Context, args map[string]string) er
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	currentNote, err := c.storage.GetSecretById(ctx, model.Note, identity)
+	currentNote, err := c.storage.GetSecretByID(ctx, model.Note, identity)
 	if err != nil {
 		return logger.WrapError("get secret", err)
 	}

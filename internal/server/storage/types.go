@@ -7,8 +7,8 @@ import (
 )
 
 type SecretsStorage interface {
-	AddSecret(ctx context.Context, userId string, secret *generated.Secret) error
-	ChangeSecret(ctx context.Context, userId string, secret *generated.Secret) error
-	GetAllSecrets(ctx context.Context, userId string) ([]*generated.Secret, error)
-	RemoveSecret(ctx context.Context, userId string, secret *generated.Secret) error
+	AddSecret(ctx context.Context, userID string, secret *generated.Secret) error
+	ChangeSecret(ctx context.Context, userID string, secret *generated.Secret) error
+	GetAllSecrets(ctx context.Context, userID string) ([]*generated.Secret, error)
+	RemoveSecret(ctx context.Context, userID string, secret *generated.Secret) error
 }

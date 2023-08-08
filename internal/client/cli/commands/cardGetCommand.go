@@ -49,14 +49,14 @@ func (c *cardGetCommand) invoke(ctx context.Context, args map[string]string) err
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	cardSecret, err := c.storage.GetSecretById(ctx, model.Card, identity)
+	cardSecret, err := c.storage.GetSecretByID(ctx, model.Card, identity)
 	if err != nil {
 		return logger.WrapError("get card secret", err)
 	}
 
 	_, reveal := argValue(args, revealFullArgName, revealShortArgName)
 	card := cardSecret.(*secret.CardSecret)
-	value := "***"
+	value := hiddenValue
 	if reveal {
 		value = parser.Int32ToString(card.CVV)
 	}

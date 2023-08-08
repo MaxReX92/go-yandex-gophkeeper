@@ -18,8 +18,8 @@ import (
 )
 
 type config struct {
-	ListenAddress            string `env:"LISTEN_ADDRESS" json:"listen_address,omitempty"`
-	PostgresConnectionString string `env:"DATABASE_DSN" json:"database_dsn,omitempty"`
+	ListenAddress            string `env:"LISTEN_ADDRESS" json:"listenAddress,omitempty"`
+	PostgresConnectionString string `env:"DATABASE_DSN" json:"databaseDsn,omitempty"`
 }
 
 func main() {

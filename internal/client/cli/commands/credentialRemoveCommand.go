@@ -58,14 +58,13 @@ func (c *credentialRemoveCommand) invoke(ctx context.Context, args map[string]st
 		for _, cred := range credential {
 			toRemove = append(toRemove, cred.(*secret.CredentialSecret))
 		}
-
 	} else {
 		identity, ok := argValue(args, idShortArgName, idFullArgName)
 		if !ok {
 			return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 		}
 
-		credential, err := c.storage.GetSecretById(ctx, model.Credential, identity)
+		credential, err := c.storage.GetSecretByID(ctx, model.Credential, identity)
 		if err != nil {
 			return logger.WrapError("get secret", err)
 		}

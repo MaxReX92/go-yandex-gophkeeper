@@ -58,14 +58,13 @@ func (c *noteRemoveCommand) invoke(ctx context.Context, args map[string]string) 
 		for _, note := range note {
 			toRemove = append(toRemove, note.(*secret.NoteSecret))
 		}
-
 	} else {
 		identity, ok := argValue(args, idShortArgName, idFullArgName)
 		if !ok {
 			return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 		}
 
-		note, err := c.storage.GetSecretById(ctx, model.Note, identity)
+		note, err := c.storage.GetSecretByID(ctx, model.Note, identity)
 		if err != nil {
 			return logger.WrapError("get secret", err)
 		}

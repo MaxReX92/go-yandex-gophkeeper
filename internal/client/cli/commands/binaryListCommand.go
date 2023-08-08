@@ -47,7 +47,7 @@ func (c *binaryListCommand) invoke(ctx context.Context, args map[string]string) 
 
 	for _, modelBinary := range binaries {
 		binary := modelBinary.(*secret.BinarySecret)
-		c.stream.Write(fmt.Sprintf("\t%s\t\t%s\t\t%s\t\t%s\t\t%s\n", binary.GetIdentity(), binary.Name, binary.GetComment()))
+		c.stream.Write(fmt.Sprintf("\t%s\t\t%s\t\t%s\n", binary.GetIdentity(), binary.Name, binary.GetComment()))
 	}
 
 	return nil

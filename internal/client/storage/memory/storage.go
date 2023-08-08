@@ -51,7 +51,7 @@ func (m *memoryStorage) ChangeSecret(ctx context.Context, secret model.Secret) e
 	return nil
 }
 
-func (m *memoryStorage) GetSecretById(ctx context.Context, secretType model.SecretType, identity string) (model.Secret, error) {
+func (m *memoryStorage) GetSecretByID(ctx context.Context, secretType model.SecretType, identity string) (model.Secret, error) {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
 

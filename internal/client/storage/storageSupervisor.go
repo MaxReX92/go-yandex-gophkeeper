@@ -39,7 +39,7 @@ func (s *storageSupervisor) Start(ctx context.Context) error {
 }
 
 func (s *storageSupervisor) handleEvent(ctx context.Context, event *model.SecretEvent) error {
-	logger.InfoFormat("event received: %s", event)
+	logger.InfoFormat("event received: %v", event)
 
 	eventType := event.Type
 	switch eventType {
@@ -50,6 +50,6 @@ func (s *storageSupervisor) handleEvent(ctx context.Context, event *model.Secret
 	case model.Remove:
 		return s.memoryStorage.RemoveSecret(ctx, event.Secret)
 	default:
-		return logger.WrapError(fmt.Sprintf("handle event with type %s", eventType), model.ErrUnknownType)
+		return logger.WrapError(fmt.Sprintf("handle event with type %v", eventType), model.ErrUnknownType)
 	}
 }

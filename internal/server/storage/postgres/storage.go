@@ -44,7 +44,7 @@ func NewDBStorage(ctx context.Context, conf PostgresDBStorageConfig) (*dbStorage
 	}, nil
 }
 
-func (d *dbStorage) AddSecret(ctx context.Context, userId string, secret *generated.Secret) error {
+func (d *dbStorage) AddSecret(ctx context.Context, userID string, secret *generated.Secret) error {
 	return d.callInTransaction(ctx, func(ctx context.Context, tx *sql.Tx) error {
 		typeName, err := d.toTypeName(secret.Type)
 		if err != nil {
@@ -52,7 +52,7 @@ func (d *dbStorage) AddSecret(ctx context.Context, userId string, secret *genera
 		}
 
 		command := "INSERT INTO secret VALUES ($1, $2, $3, $4)"
-		_, err = tx.ExecContext(ctx, command, secret.Identity, userId, typeName, secret.Content)
+		_, err = tx.ExecContext(ctx, command, secret.Identity, userID, typeName, secret.Content)
 		if err != nil {
 			return logger.WrapError("call add user query", err)
 		}
@@ -61,12 +61,12 @@ func (d *dbStorage) AddSecret(ctx context.Context, userId string, secret *genera
 	})
 }
 
-func (d *dbStorage) ChangeSecret(ctx context.Context, userId string, secret *generated.Secret) error {
+func (d *dbStorage) ChangeSecret(ctx context.Context, userID string, secret *generated.Secret) error {
 	return d.callInTransaction(ctx, func(ctx context.Context, tx *sql.Tx) error {
 		command := "UPDATE secret " +
 			"SET content = $1 " +
-			"WHERE id = $2 and userId = $3"
-		_, err := tx.ExecContext(ctx, command, secret.Content, secret.Identity, userId)
+			"WHERE id = $2 and userID = $3"
+		_, err := tx.ExecContext(ctx, command, secret.Content, secret.Identity, userID)
 		if err != nil {
 			return logger.WrapError("call update user query", err)
 		}
@@ -75,13 +75,13 @@ func (d *dbStorage) ChangeSecret(ctx context.Context, userId string, secret *gen
 	})
 }
 
-func (d *dbStorage) GetAllSecrets(ctx context.Context, userId string) ([]*generated.Secret, error) {
+func (d *dbStorage) GetAllSecrets(ctx context.Context, userID string) ([]*generated.Secret, error) {
 	result, err := d.callInTransactionResult(ctx, func(ctx context.Context, tx *sql.Tx) ([]any, error) {
-		command := "SELECT s.id, s.userId, s.type, s.content " +
+		command := "SELECT s.id, s.userID, s.type, s.content " +
 			"FROM secret s " +
-			"WHERE s.userId = $1"
+			"WHERE s.userID = $1"
 
-		rows, err := tx.QueryContext(ctx, command, userId)
+		rows, err := tx.QueryContext(ctx, command, userID)
 		if err != nil {
 			return nil, logger.WrapError("call get all secrets query", err)
 		}
@@ -139,11 +139,11 @@ func (d *dbStorage) GetAllSecrets(ctx context.Context, userId string) ([]*genera
 	return secrets, nil
 }
 
-func (d *dbStorage) RemoveSecret(ctx context.Context, userId string, secret *generated.Secret) error {
+func (d *dbStorage) RemoveSecret(ctx context.Context, userID string, secret *generated.Secret) error {
 	return d.callInTransaction(ctx, func(ctx context.Context, tx *sql.Tx) error {
 		command := "DELETE from secret " +
-			"WHERE id = $1 and userId = $2"
-		_, err := tx.ExecContext(ctx, command, secret.Identity, userId)
+			"WHERE id = $1 and userID = $2"
+		_, err := tx.ExecContext(ctx, command, secret.Identity, userID)
 		if err != nil {
 			return logger.WrapError("call delete user query", err)
 		}

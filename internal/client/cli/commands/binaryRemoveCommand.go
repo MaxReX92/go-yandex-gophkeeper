@@ -58,14 +58,13 @@ func (c *binaryRemoveCommand) invoke(ctx context.Context, args map[string]string
 		for _, binary := range binaries {
 			toRemove = append(toRemove, binary.(*secret.BinarySecret))
 		}
-
 	} else {
 		identity, ok := argValue(args, idShortArgName, idFullArgName)
 		if !ok {
 			return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 		}
 
-		binary, err := c.storage.GetSecretById(ctx, model.Binary, identity)
+		binary, err := c.storage.GetSecretByID(ctx, model.Binary, identity)
 		if err != nil {
 			return logger.WrapError("get secret", err)
 		}

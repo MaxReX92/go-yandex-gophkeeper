@@ -9,8 +9,6 @@ const (
 	cvvFullArgName        = "--cvv"
 	filePathShortArgName  = "-f"
 	filePathFullArgName   = "--file"
-	helpFullArgName       = "--help"
-	helpShortArgName      = "-h"
 	idFullArgName         = "--identity"
 	idShortArgName        = "-id"
 	passFullArgName       = "--password"
@@ -25,11 +23,11 @@ const (
 	textShortArgName      = "-t"
 	validThruFullArgName  = "--validThru"
 	validThruShortArgName = "-v"
-	verboseFullArgName    = "--verbose"
-	verboseShortArgName   = "-v"
 	versionFullArgName    = "--version"
 	userFullArgName       = "--user"
 	userShortArgName      = "-u"
+
+	hiddenValue = "***"
 )
 
 type argument struct {

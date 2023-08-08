@@ -36,7 +36,7 @@ func (r *remoteStorage) ChangeSecret(ctx context.Context, secret model.Secret) e
 	return nil
 }
 
-func (r *remoteStorage) GetSecretById(ctx context.Context, secretType model.SecretType, identity string) (model.Secret, error) {
+func (r *remoteStorage) GetSecretByID(ctx context.Context, secretType model.SecretType, identity string) (model.Secret, error) {
 	// TODO implement me
 	panic("implement me")
 }

@@ -109,12 +109,12 @@ func (g *grpcServer) RemoveSecret(ctx context.Context, request *generated.Secret
 }
 
 func (g *grpcServer) SecretEvents(user *generated.User, stream generated.SecretService_SecretEventsServer) error {
-	userId := user.Identity
-	eventChannel := g.ensureEventChannel(userId)
+	userID := user.Identity
+	eventChannel := g.ensureEventChannel(userID)
 	eg, ctx := errgroup.WithContext(stream.Context())
 
 	eg.Go(func() error {
-		currentSecrets, err := g.storage.GetAllSecrets(ctx, userId)
+		currentSecrets, err := g.storage.GetAllSecrets(ctx, userID)
 		if err != nil {
 			logger.ErrorFormat("failed to load current secrets list: %v", err)
 			return logger.WrapError("load current secrets list", err)
@@ -147,25 +147,25 @@ func (g *grpcServer) SecretEvents(user *generated.User, stream generated.SecretS
 	return eg.Wait()
 }
 
-func (g *grpcServer) ensureEventChannel(userId string) chan *generated.SecretEvent {
+func (g *grpcServer) ensureEventChannel(userID string) chan *generated.SecretEvent {
 	g.lock.Lock()
 	defer g.lock.Unlock()
-	channelList, ok := g.eventChannels[userId]
+	channelList, ok := g.eventChannels[userID]
 	if !ok {
 		channelList = make([]chan *generated.SecretEvent, 0)
-		g.eventChannels[userId] = channelList
+		g.eventChannels[userID] = channelList
 	}
 
 	eventChannel := make(chan *generated.SecretEvent, 10)
-	g.eventChannels[userId] = append(channelList, eventChannel)
+	g.eventChannels[userID] = append(channelList, eventChannel)
 	return eventChannel
 }
 
-func (g *grpcServer) writeToAllChannels(userId string, event *generated.SecretEvent) {
+func (g *grpcServer) writeToAllChannels(userID string, event *generated.SecretEvent) {
 	g.lock.RLock()
 	defer g.lock.RUnlock()
 
-	channelList, ok := g.eventChannels[userId]
+	channelList, ok := g.eventChannels[userID]
 	if !ok {
 		return
 	}

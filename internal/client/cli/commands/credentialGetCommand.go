@@ -48,14 +48,14 @@ func (c *credentialGetCommand) invoke(ctx context.Context, args map[string]strin
 		return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 	}
 
-	credentialSecret, err := c.storage.GetSecretById(ctx, model.Credential, identity)
+	credentialSecret, err := c.storage.GetSecretByID(ctx, model.Credential, identity)
 	if err != nil {
 		return logger.WrapError("get credential secret", err)
 	}
 
 	_, reveal := argValue(args, revealFullArgName, revealShortArgName)
 	credential := credentialSecret.(*secret.CredentialSecret)
-	value := "***"
+	value := hiddenValue
 	if reveal {
 		value = credential.Password
 	}

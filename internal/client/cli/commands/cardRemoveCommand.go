@@ -58,14 +58,13 @@ func (c *cardRemoveCommand) invoke(ctx context.Context, args map[string]string) 
 		for _, card := range cards {
 			toRemove = append(toRemove, card.(*secret.CardSecret))
 		}
-
 	} else {
 		identity, ok := argValue(args, idShortArgName, idFullArgName)
 		if !ok {
 			return logger.WrapError(fmt.Sprintf("invoke %s command: secret identity is missed", c.name), cli.ErrRequiredArgNotFound)
 		}
 
-		card, err := c.storage.GetSecretById(ctx, model.Card, identity)
+		card, err := c.storage.GetSecretByID(ctx, model.Card, identity)
 		if err != nil {
 			return logger.WrapError("get secret", err)
 		}

@@ -7,16 +7,16 @@ type (
 
 const (
 	Binary     SecretType = 0
-	Card                  = 1
-	Credential            = 2
-	Note                  = 3
+	Card       SecretType = 1
+	Credential SecretType = 2
+	Note       SecretType = 3
 )
 
 const (
 	Initial EventType = 0
-	Add               = 1
-	Edit              = 2
-	Remove            = 3
+	Add     EventType = 1
+	Edit    EventType = 2
+	Remove  EventType = 3
 )
 
 type Secret interface {

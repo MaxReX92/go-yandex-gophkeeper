@@ -51,7 +51,7 @@ func (c *cardListCommand) invoke(ctx context.Context, args map[string]string) er
 	_, reveal := argValue(args, revealFullArgName, revealShortArgName)
 	for _, modelCard := range cards {
 		card := modelCard.(*secret.CardSecret)
-		value := "***"
+		value := hiddenValue
 		if reveal {
 			value = parser.Int32ToString(card.CVV)
 		}

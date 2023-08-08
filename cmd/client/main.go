@@ -26,9 +26,9 @@ import (
 
 type config struct {
 	ConfigPath  string `env:"CONFIG"`
-	LogsPath    string `env:"LOGS_PATH" envDefault:"./log.txt" json:"logs_path,omitempty"`
-	GrpcAddress string `env:"GRPC_ADDRESS" envDefault:"127.0.0.1:3200" json:"grpc_address,omitempty"`
-	IdentityLen int32  `env:"IDENTITY_LEN" envDefault:"8" json:"identity_len,omitempty"`
+	LogsPath    string `env:"LOGS_PATH" envDefault:"./log.txt" json:"logsPath,omitempty"`
+	GrpcAddress string `env:"GRPC_ADDRESS" envDefault:"127.0.0.1:3200" json:"grpcAddress,omitempty"`
+	IdentityLen int32  `env:"IDENTITY_LEN" envDefault:"8" json:"identityLen,omitempty"`
 }
 
 func main() {

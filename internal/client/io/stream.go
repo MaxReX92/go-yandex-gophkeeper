@@ -2,7 +2,6 @@ package io
 
 import (
 	"bufio"
-	"context"
 	"io"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
@@ -11,7 +10,6 @@ import (
 type stream struct {
 	input  *bufio.Scanner
 	output *bufio.Writer
-	done   context.Context
 }
 
 func NewIOStream(input io.Reader, output io.Writer) *stream {

@@ -40,18 +40,14 @@ func newBaseCommand(
 		invokeMethod:     invokeMethod,
 	}
 
-	if children != nil {
-		for _, child := range children {
-			child.SetParent(base)
-			base.children[child.Name()] = child
-		}
+	for _, child := range children {
+		child.SetParent(base)
+		base.children[child.Name()] = child
 	}
 
-	if args != nil {
-		for _, arg := range args {
-			for _, key := range arg.Keys() {
-				base.args[key] = arg
-			}
+	for _, arg := range args {
+		for _, key := range arg.Keys() {
+			base.args[key] = arg
 		}
 	}
 
@@ -123,12 +119,12 @@ func (c *baseCommand) ShowHelp() {
 	// TODO: ignore help command
 	childrenLen := len(c.children)
 	if len(c.children) > 0 {
-		c.stream.Write(fmt.Sprintf(" <command>"))
+		c.stream.Write(" <command>")
 	}
 
 	argsLen := len(c.args)
 	if len(c.args) > 0 {
-		c.stream.Write(fmt.Sprintf(" [arguments]"))
+		c.stream.Write(" [arguments]")
 	}
 	c.stream.Write("\n\n")
 

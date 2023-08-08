@@ -50,7 +50,7 @@ func (c *noteListCommand) invoke(ctx context.Context, args map[string]string) er
 	_, reveal := argValue(args, revealFullArgName, revealShortArgName)
 	for _, modelNote := range notes {
 		note := modelNote.(*secret.NoteSecret)
-		value := "***"
+		value := hiddenValue
 		if reveal {
 			value = note.Text
 		}

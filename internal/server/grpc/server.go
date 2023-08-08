@@ -3,11 +3,13 @@ package grpc
 import (
 	"context"
 	"net"
+	"sync"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/generated"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/grpc"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/server/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
+	"golang.org/x/sync/errgroup"
 	rpc "google.golang.org/grpc"
 )
 
@@ -19,19 +21,21 @@ type grpcServer struct {
 	generated.UnimplementedSecretServiceServer
 
 	listenAddress string
-	events        chan *generated.SecretEvent
+	eventChannels map[string][]chan *generated.SecretEvent
 	storage       storage.SecretsStorage
 	converter     *grpc.Converter
 	server        *rpc.Server
+	lock          sync.RWMutex
 }
 
 func NewGrpcServer(conf GrpcServerConfig, storage storage.SecretsStorage, converter *grpc.Converter) *grpcServer {
 	return &grpcServer{
 		listenAddress: conf.GrpcAddress(),
-		events:        make(chan *generated.SecretEvent, 10),
+		eventChannels: map[string][]chan *generated.SecretEvent{},
 		storage:       storage,
 		converter:     converter,
 		server:        rpc.NewServer(),
+		lock:          sync.RWMutex{},
 	}
 }
 
@@ -67,10 +71,10 @@ func (g *grpcServer) AddSecret(ctx context.Context, request *generated.SecretReq
 		return nil, logger.WrapError("add secret", err)
 	}
 
-	g.events <- &generated.SecretEvent{
+	g.writeToAllChannels(request.User.Identity, &generated.SecretEvent{
 		Type:   generated.EventType_ADD,
 		Secret: request.Secret,
-	}
+	})
 
 	return &generated.Void{}, nil
 }
@@ -81,10 +85,10 @@ func (g *grpcServer) ChangeSecret(ctx context.Context, request *generated.Secret
 		return nil, logger.WrapError("change secret", err)
 	}
 
-	g.events <- &generated.SecretEvent{
+	g.writeToAllChannels(request.User.Identity, &generated.SecretEvent{
 		Type:   generated.EventType_EDIT,
 		Secret: request.Secret,
-	}
+	})
 
 	return &generated.Void{}, nil
 }
@@ -94,39 +98,77 @@ func (g *grpcServer) RemoveSecret(ctx context.Context, request *generated.Secret
 		return nil, logger.WrapError("remove secret", err)
 	}
 
-	g.events <- &generated.SecretEvent{
+	g.writeToAllChannels(request.User.Identity, &generated.SecretEvent{
 		Type:   generated.EventType_REMOVE,
 		Secret: request.Secret,
-	}
+	})
 
 	return &generated.Void{}, nil
 }
 
 func (g *grpcServer) SecretEvents(user *generated.User, stream generated.SecretService_SecretEventsServer) error {
-	go func(userId string) {
-		currentSecrets, err := g.storage.GetAllSecrets(stream.Context(), userId)
+	userId := user.Identity
+	eventChannel := g.ensureEventChannel(userId)
+	eg, ctx := errgroup.WithContext(stream.Context())
+
+	eg.Go(func() error {
+		currentSecrets, err := g.storage.GetAllSecrets(ctx, userId)
 		if err != nil {
 			logger.ErrorFormat("failed to load current secrets list: %v", err)
-			return
+			return logger.WrapError("load current secrets list", err)
 		}
 
 		for _, currentSecret := range currentSecrets {
-			g.events <- &generated.SecretEvent{
+			eventChannel <- &generated.SecretEvent{
 				Type:   generated.EventType_INITIAL,
 				Secret: currentSecret,
 			}
 		}
-	}(user.Identity)
 
-	for {
-		select {
-		case <-stream.Context().Done():
-			return nil
-		case event := <-g.events:
-			err := stream.Send(event)
-			if err != nil {
-				return logger.WrapError("send message", err)
+		return nil
+	})
+
+	eg.Go(func() error {
+		for {
+			select {
+			case <-ctx.Done():
+				return nil
+			case event := <-eventChannel:
+				err := stream.Send(event)
+				if err != nil {
+					return logger.WrapError("send message", err)
+				}
 			}
 		}
+	})
+
+	return eg.Wait()
+}
+
+func (g *grpcServer) ensureEventChannel(userId string) chan *generated.SecretEvent {
+	g.lock.Lock()
+	defer g.lock.Unlock()
+	channelList, ok := g.eventChannels[userId]
+	if !ok {
+		channelList = make([]chan *generated.SecretEvent, 0)
+		g.eventChannels[userId] = channelList
+	}
+
+	eventChannel := make(chan *generated.SecretEvent, 10)
+	g.eventChannels[userId] = append(channelList, eventChannel)
+	return eventChannel
+}
+
+func (g *grpcServer) writeToAllChannels(userId string, event *generated.SecretEvent) {
+	g.lock.RLock()
+	defer g.lock.RUnlock()
+
+	channelList, ok := g.eventChannels[userId]
+	if !ok {
+		return
+	}
+
+	for _, channel := range channelList {
+		channel <- event
 	}
 }

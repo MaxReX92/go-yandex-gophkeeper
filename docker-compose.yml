@@ -47,3 +47,25 @@ services:
         limits:
           cpus: '0.5'
           memory: 512Mb
+          
+  secret-server:
+    container_name: secret_server
+    profiles:
+      - service
+    image: server:latest
+    depends_on:
+      - postgres
+    build:
+      context: ./
+      dockerfile: ./cmd/server/Dockerfile
+    ports:
+      - "3200:3200"
+    environment:
+      <<: *common-variables
+    restart: unless-stopped
+    stop_signal: SIGINT
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 128Mb

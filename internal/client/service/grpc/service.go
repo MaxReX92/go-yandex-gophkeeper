@@ -4,14 +4,13 @@ import (
 	"context"
 	"time"
 
-	rpc "google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/generated"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/grpc"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/tls"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
+	rpc "google.golang.org/grpc"
 )
 
 type GrpcServiceConfig interface {
@@ -24,8 +23,19 @@ type grpcService struct {
 	converter   *grpc.Converter
 }
 
-func NewService(conf GrpcServiceConfig, credentials auth.Credentials, converter *grpc.Converter) (*grpcService, error) {
-	connection, err := rpc.Dial(conf.GrpcServerAddress(), rpc.WithTransportCredentials(insecure.NewCredentials()))
+func NewService(
+	conf GrpcServiceConfig,
+	credentials auth.Credentials,
+	converter *grpc.Converter,
+	credentialsProvider tls.CredentialsProvider,
+) (*grpcService, error) {
+
+	transportCredentials, err := credentialsProvider.GetTransportCredentials()
+	if err != nil {
+		return nil, logger.WrapError("load transport credentials", err)
+	}
+
+	connection, err := rpc.Dial(conf.GrpcServerAddress(), rpc.WithTransportCredentials(transportCredentials))
 	if err != nil {
 		return nil, logger.WrapError("open grpc connection", err)
 	}

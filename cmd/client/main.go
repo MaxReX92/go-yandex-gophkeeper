@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/tls/cert"
 	"github.com/caarlos0/env/v7"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth"
@@ -25,10 +26,12 @@ import (
 )
 
 type config struct {
-	ConfigPath  string `env:"CONFIG"`
-	LogsPath    string `env:"LOGS_PATH" envDefault:"./log.txt" json:"logsPath,omitempty"`
-	GrpcAddress string `env:"GRPC_ADDRESS" envDefault:"127.0.0.1:3200" json:"grpcAddress,omitempty"`
-	IdentityLen int32  `env:"IDENTITY_LEN" envDefault:"8" json:"identityLen,omitempty"`
+	ConfigPath     string `env:"CONFIG"`
+	LogsPath       string `env:"LOGS_PATH" envDefault:"./log.txt" json:"logsPath,omitempty"`
+	GrpcAddress    string `env:"GRPC_ADDRESS" envDefault:"127.0.0.1:3200" json:"grpcAddress,omitempty"`
+	IdentityLen    int32  `env:"IDENTITY_LEN" envDefault:"8" json:"identityLen,omitempty"`
+	PublicCertPath string `env:"CERT_PATH" envDefault:"../../credentials/public.crt" json:"certPath,omitempty"`
+	PrivateKeyPath string `env:"KEY_PATH" envDefault:"../../credentials/private.key" json:"keyPath,omitempty"`
 }
 
 func main() {
@@ -60,7 +63,8 @@ func main() {
 	serializer := internalJson.NewSerializer()
 	converter := modelGrpc.NewConverter(serializer)
 	credentials := auth.NewCredentials("test_user")
-	service, err := grpc.NewService(conf, credentials, converter)
+	credentialsProvider := cert.NewCredentialsProvider(conf)
+	service, err := grpc.NewService(conf, credentials, converter, credentialsProvider)
 	if err != nil {
 		panic(logger.WrapError("create grpc service", err))
 	}
@@ -202,4 +206,12 @@ func (c *config) GrpcServerAddress() string {
 
 func (c *config) IdentityLength() int32 {
 	return c.IdentityLen
+}
+
+func (c *config) GetPublicCertPath() string {
+	return c.PublicCertPath
+}
+
+func (c *config) GetPrivateKeyPath() string {
+	return c.PrivateKeyPath
 }

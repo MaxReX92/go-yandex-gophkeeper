@@ -2,9 +2,10 @@ package grpc
 
 import (
 	"context"
-	"net"
+	"crypto/tls"
 	"sync"
 
+	tlsCert "github.com/MaxReX92/go-yandex-gophkeeper/internal/tls"
 	"golang.org/x/sync/errgroup"
 	rpc "google.golang.org/grpc"
 
@@ -21,27 +22,34 @@ type GrpcServerConfig interface {
 type grpcServer struct {
 	generated.UnimplementedSecretServiceServer
 
-	listenAddress string
-	eventChannels map[string][]chan *generated.SecretEvent
-	storage       storage.SecretsStorage
-	converter     *grpc.Converter
-	server        *rpc.Server
-	lock          sync.RWMutex
+	listenAddress       string
+	eventChannels       map[string][]chan *generated.SecretEvent
+	storage             storage.SecretsStorage
+	converter           *grpc.Converter
+	server              *rpc.Server
+	credentialsProvider tlsCert.CredentialsProvider
+	lock                sync.RWMutex
 }
 
-func NewGrpcServer(conf GrpcServerConfig, storage storage.SecretsStorage, converter *grpc.Converter) *grpcServer {
+func NewGrpcServer(conf GrpcServerConfig, storage storage.SecretsStorage, converter *grpc.Converter, credentialsProvider tlsCert.CredentialsProvider) *grpcServer {
 	return &grpcServer{
-		listenAddress: conf.GrpcAddress(),
-		eventChannels: map[string][]chan *generated.SecretEvent{},
-		storage:       storage,
-		converter:     converter,
-		server:        rpc.NewServer(),
-		lock:          sync.RWMutex{},
+		listenAddress:       conf.GrpcAddress(),
+		eventChannels:       map[string][]chan *generated.SecretEvent{},
+		storage:             storage,
+		converter:           converter,
+		server:              rpc.NewServer(),
+		credentialsProvider: credentialsProvider,
+		lock:                sync.RWMutex{},
 	}
 }
 
 func (g *grpcServer) Start(_ context.Context) error {
-	listen, err := net.Listen("tcp", g.listenAddress)
+	tlsConfig, err := g.credentialsProvider.GetTlsConfig()
+	if err != nil {
+		return logger.WrapError("create tls config", err)
+	}
+
+	listen, err := tls.Listen("tcp", g.listenAddress, tlsConfig)
 	if err != nil {
 		return logger.WrapError("start listen TCP", err)
 	}

@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/tls/cert"
 	"github.com/caarlos0/env/v7"
 
 	modelGrpc "github.com/MaxReX92/go-yandex-gophkeeper/internal/model/grpc"
@@ -20,6 +21,8 @@ import (
 type config struct {
 	ListenAddress            string `env:"LISTEN_ADDRESS" json:"listenAddress,omitempty"`
 	PostgresConnectionString string `env:"DATABASE_DSN" json:"databaseDsn,omitempty"`
+	PublicCertPath           string `env:"CERT_PATH" json:"certPath,omitempty"`
+	PrivateKeyPath           string `env:"KEY_PATH" json:"keyPath,omitempty"`
 }
 
 func main() {
@@ -44,7 +47,8 @@ func main() {
 	if err != nil {
 		panic(logger.WrapError("create db storage", err))
 	}
-	server := grpc.NewGrpcServer(conf, dbStorage, converter)
+	credentialsProvider := cert.NewCredentialsProvider(conf)
+	server := grpc.NewGrpcServer(conf, dbStorage, converter, credentialsProvider)
 	app := runner.NewGracefulRunner(server)
 
 	// runtime
@@ -68,6 +72,8 @@ func createConfig() (*config, error) {
 
 	flag.StringVar(&conf.ListenAddress, "l", "127.0.0.1:3200", "Server grpc URL")
 	flag.StringVar(&conf.PostgresConnectionString, "d", "host=localhost user=postgres database=secrets password=postgres", "Database connection stirng")
+	flag.StringVar(&conf.PublicCertPath, "c", "../../credentials/public.crt", "Path to public cert")
+	flag.StringVar(&conf.PrivateKeyPath, "k", "../../credentials/private.key", "Path to private key")
 	flag.Parse()
 
 	err := env.Parse(conf)
@@ -84,4 +90,12 @@ func (c *config) GrpcAddress() string {
 
 func (c *config) ConnectionString() string {
 	return c.PostgresConnectionString
+}
+
+func (c *config) GetPublicCertPath() string {
+	return c.PublicCertPath
+}
+
+func (c *config) GetPrivateKeyPath() string {
+	return c.PrivateKeyPath
 }

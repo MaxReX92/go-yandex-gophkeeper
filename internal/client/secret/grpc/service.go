@@ -48,12 +48,17 @@ func NewService(
 }
 
 func (s *grpcService) AddSecret(ctx context.Context, secret model.Secret) error {
-	grpcSecret, err := s.converter.FromModelSecret(secret)
+	credentials, err := s.credentialsProvider.GetCredentials()
+	if err != nil {
+		return err
+	}
+
+	grpcSecret, err := s.converter.FromModelSecret(secret, credentials.PersonalToken)
 	if err != nil {
 		return logger.WrapError("convert model secret", err)
 	}
 
-	request, err := s.createSecretRequest(grpcSecret)
+	request, err := s.createSecretRequest(grpcSecret, credentials)
 	if err != nil {
 		return logger.WrapError("create secret request", err)
 	}
@@ -67,12 +72,17 @@ func (s *grpcService) AddSecret(ctx context.Context, secret model.Secret) error 
 }
 
 func (s *grpcService) ChangeSecret(ctx context.Context, secret model.Secret) error {
-	grpcSecret, err := s.converter.FromModelSecret(secret)
+	credentials, err := s.credentialsProvider.GetCredentials()
+	if err != nil {
+		return err
+	}
+
+	grpcSecret, err := s.converter.FromModelSecret(secret, credentials.PersonalToken)
 	if err != nil {
 		return logger.WrapError("convert model secret", err)
 	}
 
-	request, err := s.createSecretRequest(grpcSecret)
+	request, err := s.createSecretRequest(grpcSecret, credentials)
 	if err != nil {
 		return logger.WrapError("create secret request", err)
 	}
@@ -86,12 +96,17 @@ func (s *grpcService) ChangeSecret(ctx context.Context, secret model.Secret) err
 }
 
 func (s *grpcService) RemoveSecret(ctx context.Context, secret model.Secret) error {
-	grpcSecret, err := s.converter.FromModelSecret(secret)
+	credentials, err := s.credentialsProvider.GetCredentials()
+	if err != nil {
+		return err
+	}
+
+	grpcSecret, err := s.converter.FromModelSecret(secret, credentials.PersonalToken)
 	if err != nil {
 		return logger.WrapError("convert model secret", err)
 	}
 
-	request, err := s.createSecretRequest(grpcSecret)
+	request, err := s.createSecretRequest(grpcSecret, credentials)
 	if err != nil {
 		return logger.WrapError("create secret request", err)
 	}
@@ -122,7 +137,7 @@ func (s *grpcService) SecretEvents(ctx context.Context) <-chan *model.SecretEven
 					if err != nil {
 						logger.ErrorFormat("failed to get events stream: %v", err)
 					} else {
-						s.receiveEvents(ctx, eventStream, result)
+						s.receiveEvents(ctx, eventStream, credentials, result)
 					}
 				}
 
@@ -136,7 +151,12 @@ func (s *grpcService) SecretEvents(ctx context.Context) <-chan *model.SecretEven
 	return result
 }
 
-func (s *grpcService) receiveEvents(ctx context.Context, eventStream generated.SecretService_SecretEventsClient, result chan<- *model.SecretEvent) {
+func (s *grpcService) receiveEvents(
+	ctx context.Context,
+	eventStream generated.SecretService_SecretEventsClient,
+	credentials *auth.Credentials,
+	result chan<- *model.SecretEvent,
+) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -148,7 +168,7 @@ func (s *grpcService) receiveEvents(ctx context.Context, eventStream generated.S
 				logger.ErrorFormat("failed to receive secret event: %v", err)
 				return
 			} else {
-				modelEvent, err := s.converter.ToModelEvent(event)
+				modelEvent, err := s.converter.ToModelEvent(event, credentials.PersonalToken)
 				if err != nil {
 					logger.ErrorFormat("failed to convert secret event: %v", err)
 				} else {
@@ -159,12 +179,7 @@ func (s *grpcService) receiveEvents(ctx context.Context, eventStream generated.S
 	}
 }
 
-func (s *grpcService) createSecretRequest(secret *generated.Secret) (*generated.SecretRequest, error) {
-	credentials, err := s.credentialsProvider.GetCredentials()
-	if err != nil {
-		return nil, err
-	}
-
+func (s *grpcService) createSecretRequest(secret *generated.Secret, credentials *auth.Credentials) (*generated.SecretRequest, error) {
 	return &generated.SecretRequest{
 		User:   &generated.User{Identity: credentials.Identity},
 		Secret: secret,

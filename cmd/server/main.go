@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/crypto/aes"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/db/postgres"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/tls/cert"
 	"github.com/caarlos0/env/v7"
@@ -42,7 +43,9 @@ func main() {
 
 	// build app
 	serializer := json.NewSerializer()
-	converter := modelGrpc.NewConverter(serializer)
+	encryptor := aes.NewEncryptor()
+	decryptor := aes.NewDecryptor()
+	converter := modelGrpc.NewConverter(serializer, encryptor, decryptor)
 	dbService, err := postgres.NewDBService(ctx, conf)
 	if err != nil {
 		panic(logger.WrapError("create db storage", err))

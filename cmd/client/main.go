@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/crypto/aes"
 	serviceGrpc "github.com/MaxReX92/go-yandex-gophkeeper/internal/client/secret/grpc"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/identity"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/identity/rand"
@@ -65,7 +66,9 @@ func main() {
 	ioStream := io.NewIOStream(os.Stdin, os.Stdout)
 	randomGenerator := rand.NewGenerator(conf)
 	serializer := internalJson.NewSerializer()
-	converter := modelGrpc.NewConverter(serializer)
+	encryptor := aes.NewEncryptor()
+	decryptor := aes.NewDecryptor()
+	converter := modelGrpc.NewConverter(serializer, encryptor, decryptor)
 	tlsProvider := cert.NewTLSProvider(conf)
 	credentialsProvider, err := grpc.NewProvider(conf, tlsProvider)
 	if err != nil {

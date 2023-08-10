@@ -5,17 +5,19 @@ import (
 	"encoding/json"
 	"os"
 	"os/signal"
+	"time"
 
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth"
+	serviceGrpc "github.com/MaxReX92/go-yandex-gophkeeper/internal/client/secret/grpc"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/identity"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/identity/rand"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/tls/cert"
 	"github.com/caarlos0/env/v7"
 
-	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth/grpc"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli/commands"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
-	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/service/grpc"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage/memory"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage/remote"
@@ -26,12 +28,14 @@ import (
 )
 
 type config struct {
-	ConfigPath     string `env:"CONFIG"`
-	LogsPath       string `env:"LOGS_PATH" envDefault:"./log.txt" json:"logsPath,omitempty"`
-	GrpcAddress    string `env:"GRPC_ADDRESS" envDefault:"127.0.0.1:3200" json:"grpcAddress,omitempty"`
-	IdentityLen    int32  `env:"IDENTITY_LEN" envDefault:"16" json:"identityLen,omitempty"`
-	PublicCertPath string `env:"CERT_PATH" envDefault:"../../credentials/public.crt" json:"certPath,omitempty"`
-	PrivateKeyPath string `env:"KEY_PATH" envDefault:"../../credentials/private.key" json:"keyPath,omitempty"`
+	ConfigPath         string        `env:"CONFIG"`
+	LogsPath           string        `env:"LOGS_PATH" envDefault:"./log.txt" json:"logsPath,omitempty"`
+	GrpcSecretsAddress string        `env:"GRPC_SECRETS_ADDRESS" envDefault:"127.0.0.1:3200" json:"grpcSecretsAddress,omitempty"`
+	GrpcAuthAddress    string        `env:"GRPC_AUTH_ADDRESS" envDefault:"127.0.0.1:3201" json:"grpcAuthAddress,omitempty"`
+	IdentityLen        int32         `env:"IDENTITY_LEN" envDefault:"16" json:"identityLen,omitempty"`
+	PublicCertPath     string        `env:"CERT_PATH" envDefault:"../../credentials/public.crt" json:"certPath,omitempty"`
+	PrivateKeyPath     string        `env:"KEY_PATH" envDefault:"../../credentials/private.key" json:"keyPath,omitempty"`
+	TokenInterval      time.Duration `env:"TOKEN_INTERVAL" envDefault:"30s" json:"tokenTTL,omitempty"`
 }
 
 func main() {
@@ -62,12 +66,15 @@ func main() {
 	randomGenerator := rand.NewGenerator(conf)
 	serializer := internalJson.NewSerializer()
 	converter := modelGrpc.NewConverter(serializer)
-	credentials := auth.NewCredentials("test_user")
 	tlsProvider := cert.NewTLSProvider(conf)
-	service, err := grpc.NewService(conf, credentials, converter, tlsProvider)
+	credentialsProvider, err := grpc.NewProvider(conf, tlsProvider)
 	if err != nil {
-		panic(logger.WrapError("create grpc service", err))
+		panic(logger.WrapError("create grpc auth service", err))
 	}
+	if err != nil {
+		panic(logger.WrapError("create grpc secrets service", err))
+	}
+	service, err := serviceGrpc.NewService(conf, credentialsProvider, converter, tlsProvider)
 	memoryStorage := memory.NewStorage()
 	remoteStorage := remote.NewStorage(service)
 	supervisor := storage.NewStorageSupervisor(service, memoryStorage)
@@ -119,9 +126,14 @@ func createConfig() (*config, error) {
 
 func buildCommands(
 	ioStream io.CommandStream,
+	credentialsProvider auth.CredentialsProvider,
 	generator identity.Generator,
 	storage storage.ClientSecretsStorage,
 ) cli.Command {
+	// auth
+	registerCommand := commands.NewRegisterCommand(ioStream, credentialsProvider)
+	loginCommand := commands.NewLoginCommand(ioStream, credentialsProvider)
+
 	// binary
 	binaryAddCommand := commands.NewBinaryAddCommand(ioStream, generator, storage, commands.NewHelpCommand())
 	binaryEditCommand := commands.NewBinaryEditCommand(ioStream, storage, commands.NewHelpCommand())
@@ -192,6 +204,8 @@ func buildCommands(
 	return commands.NewInitialCommand(
 		ioStream,
 		commands.NewHelpCommand(),
+		registerCommand,
+		loginCommand,
 		binaryCommand,
 		cardCommand,
 		credentialCommand,
@@ -200,8 +214,8 @@ func buildCommands(
 	)
 }
 
-func (c *config) GrpcServerAddress() string {
-	return c.GrpcAddress
+func (c *config) SecretServerAddress() string {
+	return c.GrpcSecretsAddress
 }
 
 func (c *config) IdentityLength() int32 {
@@ -214,4 +228,12 @@ func (c *config) GetPublicCertPath() string {
 
 func (c *config) GetPrivateKeyPath() string {
 	return c.PrivateKeyPath
+}
+
+func (c *config) AuthServerAddress() string {
+	return c.GrpcAuthAddress
+}
+
+func (c *config) RenewTokenInterval() time.Duration {
+	return c.TokenInterval
 }

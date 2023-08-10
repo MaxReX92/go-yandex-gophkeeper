@@ -1,5 +1,9 @@
 package auth
 
-type Credentials interface {
-	GetUserName() string
+import "context"
+
+type CredentialsProvider interface {
+	GetCredentials() (*Credentials, error)
+	Register(ctx context.Context, userName string, password string) error
+	Login(ctx context.Context, userName string, password string) error
 }

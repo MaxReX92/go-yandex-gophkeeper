@@ -2,8 +2,10 @@ package cli
 
 import (
 	"context"
+	"errors"
 	"strings"
 
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
@@ -31,7 +33,11 @@ func (h *handler) Start(ctx context.Context) error {
 
 			err := h.initialCommand.Invoke(ctx, strings.Split(message, " "))
 			if err != nil {
-				h.ioStream.Write(logger.WrapError("invoke command", err).Error())
+				if errors.Is(err, auth.ErrUnauthorized) {
+					h.ioStream.Write("You`ll need to be authorized first\n")
+				} else {
+					h.ioStream.Write(logger.WrapError("invoke command", err).Error())
+				}
 			}
 		case <-ctx.Done():
 			logger.Info("handler stopping...")

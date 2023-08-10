@@ -14,18 +14,18 @@ import (
 )
 
 type GrpcServiceConfig interface {
-	GrpcServerAddress() string
+	SecretServerAddress() string
 }
 
 type grpcService struct {
-	client      generated.SecretServiceClient
-	credentials auth.Credentials
-	converter   *grpc.Converter
+	client              generated.SecretServiceClient
+	credentialsProvider auth.CredentialsProvider
+	converter           *grpc.Converter
 }
 
 func NewService(
 	conf GrpcServiceConfig,
-	credentials auth.Credentials,
+	credentialsProvider auth.CredentialsProvider,
 	converter *grpc.Converter,
 	tlsProvider tls.TLSProvider,
 ) (*grpcService, error) {
@@ -35,15 +35,15 @@ func NewService(
 		return nil, logger.WrapError("load transport credentials", err)
 	}
 
-	connection, err := rpc.Dial(conf.GrpcServerAddress(), rpc.WithTransportCredentials(transportCredentials))
+	connection, err := rpc.Dial(conf.SecretServerAddress(), rpc.WithTransportCredentials(transportCredentials))
 	if err != nil {
 		return nil, logger.WrapError("open grpc connection", err)
 	}
 
 	return &grpcService{
-		client:      generated.NewSecretServiceClient(connection),
-		credentials: credentials,
-		converter:   converter,
+		client:              generated.NewSecretServiceClient(connection),
+		credentialsProvider: credentialsProvider,
+		converter:           converter,
 	}, nil
 }
 
@@ -53,7 +53,12 @@ func (s *grpcService) AddSecret(ctx context.Context, secret model.Secret) error 
 		return logger.WrapError("convert model secret", err)
 	}
 
-	_, err = s.client.AddSecret(ctx, s.createSecretRequest(grpcSecret))
+	request, err := s.createSecretRequest(grpcSecret)
+	if err != nil {
+		return logger.WrapError("create secret request", err)
+	}
+
+	_, err = s.client.AddSecret(ctx, request)
 	if err != nil {
 		return logger.WrapError("send add secret request", err)
 	}
@@ -67,7 +72,12 @@ func (s *grpcService) ChangeSecret(ctx context.Context, secret model.Secret) err
 		return logger.WrapError("convert model secret", err)
 	}
 
-	_, err = s.client.ChangeSecret(ctx, s.createSecretRequest(grpcSecret))
+	request, err := s.createSecretRequest(grpcSecret)
+	if err != nil {
+		return logger.WrapError("create secret request", err)
+	}
+
+	_, err = s.client.ChangeSecret(ctx, request)
 	if err != nil {
 		return logger.WrapError("send edit secret request", err)
 	}
@@ -81,7 +91,12 @@ func (s *grpcService) RemoveSecret(ctx context.Context, secret model.Secret) err
 		return logger.WrapError("convert model secret", err)
 	}
 
-	_, err = s.client.RemoveSecret(ctx, s.createSecretRequest(grpcSecret))
+	request, err := s.createSecretRequest(grpcSecret)
+	if err != nil {
+		return logger.WrapError("create secret request", err)
+	}
+
+	_, err = s.client.RemoveSecret(ctx, request)
 	if err != nil {
 		return logger.WrapError("send remove secret request", err)
 	}
@@ -100,12 +115,15 @@ func (s *grpcService) SecretEvents(ctx context.Context) <-chan *model.SecretEven
 				logger.Info("Done")
 				return
 			default:
-				user := generated.User{Identity: s.credentials.GetUserName()}
-				eventStream, err := s.client.SecretEvents(ctx, &user)
-				if err != nil {
-					logger.ErrorFormat("failed to get events stream: %v", err)
-				} else {
-					s.receiveEvents(ctx, eventStream, result)
+				credentials, err := s.credentialsProvider.GetCredentials()
+				if err == nil {
+					user := generated.User{Identity: credentials.Identity}
+					eventStream, err := s.client.SecretEvents(ctx, &user)
+					if err != nil {
+						logger.ErrorFormat("failed to get events stream: %v", err)
+					} else {
+						s.receiveEvents(ctx, eventStream, result)
+					}
 				}
 
 				if ctx.Err() == nil {
@@ -141,9 +159,14 @@ func (s *grpcService) receiveEvents(ctx context.Context, eventStream generated.S
 	}
 }
 
-func (s *grpcService) createSecretRequest(secret *generated.Secret) *generated.SecretRequest {
-	return &generated.SecretRequest{
-		User:   &generated.User{Identity: s.credentials.GetUserName()},
-		Secret: secret,
+func (s *grpcService) createSecretRequest(secret *generated.Secret) (*generated.SecretRequest, error) {
+	credentials, err := s.credentialsProvider.GetCredentials()
+	if err != nil {
+		return nil, err
 	}
+
+	return &generated.SecretRequest{
+		User:   &generated.User{Identity: credentials.Identity},
+		Secret: secret,
+	}, nil
 }

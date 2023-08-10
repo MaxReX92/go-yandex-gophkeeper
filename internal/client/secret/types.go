@@ -1,4 +1,4 @@
-package service
+package secret
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 )
 
-type SecretService interface {
+type Service interface {
 	AddSecret(ctx context.Context, secret model.Secret) error
 	ChangeSecret(ctx context.Context, secret model.Secret) error
 	RemoveSecret(ctx context.Context, secret model.Secret) error

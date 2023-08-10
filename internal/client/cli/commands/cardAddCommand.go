@@ -8,6 +8,7 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/identity"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/secret"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/parser"

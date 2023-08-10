@@ -31,7 +31,7 @@ type grpcServer struct {
 	lock          sync.RWMutex
 }
 
-func NewGrpcServer(conf GrpcServerConfig, dbService db.Service, converter *grpc.Converter, tlsProvider tlsCert.TLSProvider) *grpcServer {
+func NewServer(conf GrpcServerConfig, dbService db.Service, converter *grpc.Converter, tlsProvider tlsCert.TLSProvider) *grpcServer {
 	return &grpcServer{
 		listenAddress: conf.GrpcAddress(),
 		eventChannels: map[string][]chan *generated.SecretEvent{},

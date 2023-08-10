@@ -6,7 +6,8 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/MaxReX92/go-yandex-gophkeeper/internal/generator/rand"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/identity"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/identity/rand"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/tls/cert"
 	"github.com/caarlos0/env/v7"
 
@@ -28,7 +29,7 @@ type config struct {
 	ConfigPath     string `env:"CONFIG"`
 	LogsPath       string `env:"LOGS_PATH" envDefault:"./log.txt" json:"logsPath,omitempty"`
 	GrpcAddress    string `env:"GRPC_ADDRESS" envDefault:"127.0.0.1:3200" json:"grpcAddress,omitempty"`
-	IdentityLen    int32  `env:"IDENTITY_LEN" envDefault:"8" json:"identityLen,omitempty"`
+	IdentityLen    int32  `env:"IDENTITY_LEN" envDefault:"16" json:"identityLen,omitempty"`
 	PublicCertPath string `env:"CERT_PATH" envDefault:"../../credentials/public.crt" json:"certPath,omitempty"`
 	PrivateKeyPath string `env:"KEY_PATH" envDefault:"../../credentials/private.key" json:"keyPath,omitempty"`
 }

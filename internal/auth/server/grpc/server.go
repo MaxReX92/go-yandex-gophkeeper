@@ -31,7 +31,7 @@ type grpcServer struct {
 	identityGenerator identity.Generator
 }
 
-func NewGrpcServer(
+func NewServer(
 	conf GrpcServerConfig,
 	dbService db.Service,
 	tlsProvider tlsCert.TLSProvider,

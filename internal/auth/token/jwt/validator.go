@@ -15,7 +15,7 @@ type jwtTokenValidator struct {
 	secretKey []byte
 }
 
-func NewValidator(conf TokenParserConfig) *jwtTokenValidator {
+func NewValidator(conf TokenValidatorConfig) *jwtTokenValidator {
 	return &jwtTokenValidator{
 		secretKey: conf.SecretKey(),
 	}

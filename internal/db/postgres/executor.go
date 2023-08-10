@@ -33,8 +33,8 @@ func newExecutor(tx *sql.Tx) *dbExecutor {
 }
 
 func (d *dbExecutor) AddUser(ctx context.Context, id string, username string, password string, personalToken string) error {
-	command := "INSERT INTO users VALUES ($1, $2, $3)"
-	_, err := d.tx.ExecContext(ctx, command, username, password, personalToken)
+	command := "INSERT INTO users VALUES ($1, $2, $3, $4)"
+	_, err := d.tx.ExecContext(ctx, command, id, username, password, personalToken)
 	if err != nil {
 		return logger.WrapError("call add user query", err)
 	}
@@ -43,7 +43,7 @@ func (d *dbExecutor) AddUser(ctx context.Context, id string, username string, pa
 }
 
 func (d *dbExecutor) GetUserByUserName(ctx context.Context, username string) (*model.User, error) {
-	command := "SELECT u.id, u.username, u.password, u.personalToken" +
+	command := "SELECT u.id, u.username, u.password, u.personalToken " +
 		"FROM users u " +
 		"WHERE u.username = $1"
 

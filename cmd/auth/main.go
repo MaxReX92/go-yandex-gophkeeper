@@ -7,6 +7,8 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/caarlos0/env/v7"
+
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/auth/server/grpc"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/auth/token/jwt"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/db/postgres"
@@ -14,7 +16,6 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/tls/cert"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/runner"
-	"github.com/caarlos0/env/v7"
 )
 
 type config struct {
@@ -106,6 +107,7 @@ func (c *config) TokenTTL() time.Duration {
 func (c *config) IdentityLength() int32 {
 	return int32(c.IdentityLen)
 }
+
 func (c *config) GetPublicCertPath() string {
 	return c.PublicCertPath
 }

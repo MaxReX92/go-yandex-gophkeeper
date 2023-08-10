@@ -8,5 +8,5 @@ import (
 
 type TLSProvider interface {
 	GetTransportCredentials() (credentials.TransportCredentials, error)
-	GetTlsConfig() (*tls.Config, error)
+	GetTLSConfig() (*tls.Config, error)
 }

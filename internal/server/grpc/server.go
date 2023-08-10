@@ -5,10 +5,11 @@ import (
 	"crypto/tls"
 	"sync"
 
-	"github.com/MaxReX92/go-yandex-gophkeeper/internal/db"
-	tlsCert "github.com/MaxReX92/go-yandex-gophkeeper/internal/tls"
 	"golang.org/x/sync/errgroup"
 	rpc "google.golang.org/grpc"
+
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/db"
+	tlsCert "github.com/MaxReX92/go-yandex-gophkeeper/internal/tls"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/generated"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/grpc"
@@ -44,7 +45,7 @@ func NewServer(conf GrpcServerConfig, dbService db.Service, converter *grpc.Conv
 }
 
 func (g *grpcServer) Start(_ context.Context) error {
-	tlsConfig, err := g.tlsProvider.GetTlsConfig()
+	tlsConfig, err := g.tlsProvider.GetTLSConfig()
 	if err != nil {
 		return logger.WrapError("create tls config", err)
 	}
@@ -87,7 +88,6 @@ func (g *grpcServer) AddSecret(ctx context.Context, request *generated.SecretReq
 		})
 		return nil
 	})
-
 	if err != nil {
 		return nil, logger.WrapError("call add secret query", err)
 	}
@@ -109,7 +109,6 @@ func (g *grpcServer) ChangeSecret(ctx context.Context, request *generated.Secret
 
 		return nil
 	})
-
 	if err != nil {
 		return nil, logger.WrapError("call change secret query", err)
 	}
@@ -131,7 +130,6 @@ func (g *grpcServer) RemoveSecret(ctx context.Context, request *generated.Secret
 
 		return nil
 	})
-
 	if err != nil {
 		return nil, logger.WrapError("call remove secret query", err)
 	}
@@ -162,7 +160,6 @@ func (g *grpcServer) SecretEvents(user *generated.User, stream generated.SecretS
 
 			return events, nil
 		})
-
 		if err != nil {
 			return logger.WrapError("call get all secrets query", err)
 		}

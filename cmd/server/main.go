@@ -6,10 +6,11 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/caarlos0/env/v7"
+
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/crypto/aes"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/db/postgres"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/tls/cert"
-	"github.com/caarlos0/env/v7"
 
 	modelGrpc "github.com/MaxReX92/go-yandex-gophkeeper/internal/model/grpc"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/serialization/json"

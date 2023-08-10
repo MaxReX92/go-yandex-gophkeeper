@@ -5,11 +5,12 @@ import (
 	"sync"
 	"time"
 
+	rpc "google.golang.org/grpc"
+
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/generated"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/tls"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
-	rpc "google.golang.org/grpc"
 )
 
 type GrpcServiceConfig interface {
@@ -28,7 +29,6 @@ func NewProvider(
 	conf GrpcServiceConfig,
 	tlsProvider tls.TLSProvider,
 ) (*credentialsProvider, error) {
-
 	transportCredentials, err := tlsProvider.GetTransportCredentials()
 	if err != nil {
 		return nil, logger.WrapError("load transport credentials", err)

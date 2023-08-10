@@ -32,9 +32,9 @@ func newExecutor(tx *sql.Tx) *dbExecutor {
 	return &dbExecutor{tx: tx}
 }
 
-func (d *dbExecutor) AddUser(ctx context.Context, id string, username string, password string, personalToken string) error {
+func (e *dbExecutor) AddUser(ctx context.Context, id string, username string, password string, personalToken string) error {
 	command := "INSERT INTO users VALUES ($1, $2, $3, $4)"
-	_, err := d.tx.ExecContext(ctx, command, id, username, password, personalToken)
+	_, err := e.tx.ExecContext(ctx, command, id, username, password, personalToken)
 	if err != nil {
 		return logger.WrapError("call add user query", err)
 	}
@@ -42,12 +42,12 @@ func (d *dbExecutor) AddUser(ctx context.Context, id string, username string, pa
 	return nil
 }
 
-func (d *dbExecutor) GetUserByUserName(ctx context.Context, username string) (*model.User, error) {
+func (e *dbExecutor) GetUserByUserName(ctx context.Context, username string) (*model.User, error) {
 	command := "SELECT u.id, u.username, u.password, u.personalToken " +
 		"FROM users u " +
 		"WHERE u.username = $1"
 
-	rows, err := d.tx.QueryContext(ctx, command, username)
+	rows, err := e.tx.QueryContext(ctx, command, username)
 	if err != nil {
 		return nil, logger.WrapError("call get user query", err)
 	}

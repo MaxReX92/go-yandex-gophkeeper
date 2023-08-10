@@ -7,8 +7,7 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
-type aesDecryptor struct {
-}
+type aesDecryptor struct{}
 
 func NewDecryptor() *aesDecryptor {
 	return &aesDecryptor{}

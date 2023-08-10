@@ -4,6 +4,8 @@ import (
 	"context"
 	"crypto/tls"
 
+	rpc "google.golang.org/grpc"
+
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/auth/server"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/auth/token"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/db"
@@ -12,7 +14,6 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 	tlsCert "github.com/MaxReX92/go-yandex-gophkeeper/internal/tls"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
-	rpc "google.golang.org/grpc"
 )
 
 type GrpcServerConfig interface {
@@ -51,7 +52,7 @@ func NewServer(
 }
 
 func (g *grpcServer) Start(_ context.Context) error {
-	tlsConfig, err := g.tlsProvider.GetTlsConfig()
+	tlsConfig, err := g.tlsProvider.GetTLSConfig()
 	if err != nil {
 		return logger.WrapError("create tls config", err)
 	}
@@ -86,22 +87,21 @@ func (g *grpcServer) Register(ctx context.Context, request *generated.RegisterRe
 		return nil, logger.WrapError("register user", server.ErrInvalidRequest)
 	}
 
-	userId := g.identityGenerator.GenerateNewIdentity()
+	userID := g.identityGenerator.GenerateNewIdentity()
 	personalToken := g.identityGenerator.GenerateNewIdentity()
 	err := g.dbService.CallInTransaction(ctx, func(ctx context.Context, executor db.Executor) error {
-		err := executor.AddUser(ctx, userId, request.Name, request.Password, personalToken)
+		err := executor.AddUser(ctx, userID, request.Name, request.Password, personalToken)
 		if err != nil {
 			return logger.WrapError("call new user query", err)
 		}
 
 		return nil
 	})
-
 	if err != nil {
 		return nil, logger.WrapError("create new user", err)
 	}
 
-	return &generated.RegisterResponse{Identity: userId}, nil
+	return &generated.RegisterResponse{Identity: userID}, nil
 }
 
 func (g *grpcServer) Login(ctx context.Context, request *generated.LoginRequest) (*generated.LoginResponse, error) {

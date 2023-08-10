@@ -7,13 +7,14 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/caarlos0/env/v7"
+
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/crypto/aes"
 	serviceGrpc "github.com/MaxReX92/go-yandex-gophkeeper/internal/client/secret/grpc"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/identity"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/identity/rand"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/tls/cert"
-	"github.com/caarlos0/env/v7"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth/grpc"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
@@ -36,7 +37,7 @@ type config struct {
 	IdentityLen        int32         `env:"IDENTITY_LEN" envDefault:"16" json:"identityLen,omitempty"`
 	PublicCertPath     string        `env:"CERT_PATH" envDefault:"../../credentials/public.crt" json:"certPath,omitempty"`
 	PrivateKeyPath     string        `env:"KEY_PATH" envDefault:"../../credentials/private.key" json:"keyPath,omitempty"`
-	TokenInterval      time.Duration `env:"TOKEN_INTERVAL" envDefault:"30s" json:"tokenTTL,omitempty"`
+	TokenInterval      time.Duration `env:"TOKEN_INTERVAL" envDefault:"30s" json:"tokenTtl,omitempty"`
 }
 
 func main() {
@@ -78,6 +79,9 @@ func main() {
 		panic(logger.WrapError("create grpc secrets service", err))
 	}
 	service, err := serviceGrpc.NewService(conf, credentialsProvider, converter, tlsProvider)
+	if err != nil {
+		panic(logger.WrapError("create service", err))
+	}
 	memoryStorage := memory.NewStorage()
 	remoteStorage := remote.NewStorage(service)
 	supervisor := storage.NewStorageSupervisor(service, memoryStorage)

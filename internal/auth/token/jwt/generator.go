@@ -3,8 +3,9 @@ package jwt
 import (
 	"time"
 
-	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 	"github.com/golang-jwt/jwt/v5"
+
+	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
 type JwtTokenGeneratorConfig interface {

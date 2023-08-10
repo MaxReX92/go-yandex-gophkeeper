@@ -95,7 +95,7 @@ func (c *Converter) toModelSecret(generatedSecret *generated.Secret, key string,
 	//	return nil, logger.WrapError("decrypt content", err)
 	//}
 
-	//err = c.serializer.Deserialize(decrypted, modelSecret)
+	// err = c.serializer.Deserialize(decrypted, modelSecret)
 	err := c.serializer.Deserialize(generatedSecret.Content, modelSecret)
 	if err != nil {
 		return nil, logger.WrapError("deserialize secret", err)
@@ -118,7 +118,7 @@ func (c *Converter) fromModelSecret(secret model.Secret, key string, secretType 
 	return &generated.Secret{
 		Identity: secret.GetIdentity(),
 		Type:     secretType,
-		//Content:  encrypted,
+		// Content:  encrypted,
 		Content: bytes,
 	}, nil
 }

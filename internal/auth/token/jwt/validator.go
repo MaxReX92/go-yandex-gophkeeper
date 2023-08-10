@@ -3,8 +3,9 @@ package jwt
 import (
 	"time"
 
-	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 	"github.com/golang-jwt/jwt/v5"
+
+	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
 type TokenValidatorConfig interface {
@@ -26,7 +27,6 @@ func (v *jwtTokenValidator) Check(tokenString string) (bool, error) {
 	parsedToken, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return v.secretKey, nil
 	})
-
 	if err != nil {
 		return false, logger.WrapError("parse token", err)
 	}

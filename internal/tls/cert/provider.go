@@ -3,8 +3,9 @@ package cert
 import (
 	"crypto/tls"
 
-	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 	"google.golang.org/grpc/credentials"
+
+	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
 type CertTLSProviderConfig interface {
@@ -25,7 +26,7 @@ func NewTLSProvider(conf CertTLSProviderConfig) *certTLSProvider {
 }
 
 func (c *certTLSProvider) GetTransportCredentials() (credentials.TransportCredentials, error) {
-	cert, err := c.loadTlsCert()
+	cert, err := c.loadTLSCert()
 	if err != nil {
 		return nil, err
 	}
@@ -36,8 +37,8 @@ func (c *certTLSProvider) GetTransportCredentials() (credentials.TransportCreden
 	}), nil
 }
 
-func (c *certTLSProvider) GetTlsConfig() (*tls.Config, error) {
-	cert, err := c.loadTlsCert()
+func (c *certTLSProvider) GetTLSConfig() (*tls.Config, error) {
+	cert, err := c.loadTLSCert()
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +46,7 @@ func (c *certTLSProvider) GetTlsConfig() (*tls.Config, error) {
 	return &tls.Config{Certificates: []tls.Certificate{*cert}}, nil
 }
 
-func (c *certTLSProvider) loadTlsCert() (*tls.Certificate, error) {
+func (c *certTLSProvider) loadTLSCert() (*tls.Certificate, error) {
 	cert, err := tls.LoadX509KeyPair(c.publicCert, c.privateKey)
 	if err != nil {
 		return nil, logger.WrapError("load certificate", err)

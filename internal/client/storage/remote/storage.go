@@ -3,15 +3,16 @@ package remote
 import (
 	"context"
 
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/secret"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
 type remoteStorage struct {
-	service secret.SecretService
+	service secret.Service
 }
 
-func NewStorage(service secret.SecretService) *remoteStorage {
+func NewStorage(service secret.Service) *remoteStorage {
 	return &remoteStorage{
 		service: service,
 	}

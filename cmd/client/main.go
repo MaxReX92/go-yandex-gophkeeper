@@ -79,7 +79,7 @@ func main() {
 	remoteStorage := remote.NewStorage(service)
 	supervisor := storage.NewStorageSupervisor(service, memoryStorage)
 	clientStorage := storage.NewStorageStrategy(memoryStorage, remoteStorage)
-	initialCommand := buildCommands(ioStream, randomGenerator, clientStorage)
+	initialCommand := buildCommands(ioStream, credentialsProvider, randomGenerator, clientStorage)
 	handler := cli.NewHandler(ioStream, initialCommand)
 	multiRunner := runner.NewMultiWorker(
 		supervisor,

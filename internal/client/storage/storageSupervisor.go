@@ -4,16 +4,17 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/secret"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
 type storageSupervisor struct {
-	service       secret.SecretService
+	service       secret.Service
 	memoryStorage ClientSecretsStorage
 }
 
-func NewStorageSupervisor(service secret.SecretService, memoryStorage ClientSecretsStorage) *storageSupervisor {
+func NewStorageSupervisor(service secret.Service, memoryStorage ClientSecretsStorage) *storageSupervisor {
 	return &storageSupervisor{
 		service:       service,
 		memoryStorage: memoryStorage,

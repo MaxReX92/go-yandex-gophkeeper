@@ -47,8 +47,8 @@ func main() {
 	if err != nil {
 		panic(logger.WrapError("create db storage", err))
 	}
-	credentialsProvider := cert.NewCredentialsProvider(conf)
-	server := grpc.NewGrpcServer(conf, dbStorage, converter, credentialsProvider)
+	tlsProvider := cert.NewTLSProvider(conf)
+	server := grpc.NewGrpcServer(conf, dbStorage, converter, tlsProvider)
 	app := runner.NewGracefulRunner(server)
 
 	// runtime

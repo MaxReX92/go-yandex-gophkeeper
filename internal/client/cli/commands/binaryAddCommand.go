@@ -10,7 +10,6 @@ import (
 	"os"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
-	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/generator"
 	clientIO "github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/secret"
@@ -26,13 +25,13 @@ const (
 
 type binaryAddCommand struct {
 	*baseCommand
-	generator generator.Generator
+	generator identity.Generator
 	storage   storage.ClientSecretsStorage
 }
 
 func NewBinaryAddCommand(
 	stream clientIO.CommandStream,
-	generator generator.Generator,
+	generator identity.Generator,
 	storage storage.ClientSecretsStorage,
 	children ...cli.Command,
 ) *binaryAddCommand {

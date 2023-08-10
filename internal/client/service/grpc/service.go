@@ -27,10 +27,10 @@ func NewService(
 	conf GrpcServiceConfig,
 	credentials auth.Credentials,
 	converter *grpc.Converter,
-	credentialsProvider tls.CredentialsProvider,
+	tlsProvider tls.TLSProvider,
 ) (*grpcService, error) {
 
-	transportCredentials, err := credentialsProvider.GetTransportCredentials()
+	transportCredentials, err := tlsProvider.GetTransportCredentials()
 	if err != nil {
 		return nil, logger.WrapError("load transport credentials", err)
 	}

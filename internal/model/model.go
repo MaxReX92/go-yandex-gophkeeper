@@ -29,3 +29,10 @@ type SecretEvent struct {
 	Type   EventType
 	Secret Secret
 }
+
+type User struct {
+	Identity      string
+	Name          string
+	Password      string
+	PersonalToken string
+}

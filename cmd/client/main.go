@@ -6,14 +6,13 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/generator/rand"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/tls/cert"
 	"github.com/caarlos0/env/v7"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli/commands"
-	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/generator"
-	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/generator/rand"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/service/grpc"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
@@ -63,8 +62,8 @@ func main() {
 	serializer := internalJson.NewSerializer()
 	converter := modelGrpc.NewConverter(serializer)
 	credentials := auth.NewCredentials("test_user")
-	credentialsProvider := cert.NewCredentialsProvider(conf)
-	service, err := grpc.NewService(conf, credentials, converter, credentialsProvider)
+	tlsProvider := cert.NewTLSProvider(conf)
+	service, err := grpc.NewService(conf, credentials, converter, tlsProvider)
 	if err != nil {
 		panic(logger.WrapError("create grpc service", err))
 	}
@@ -119,7 +118,7 @@ func createConfig() (*config, error) {
 
 func buildCommands(
 	ioStream io.CommandStream,
-	generator generator.Generator,
+	generator identity.Generator,
 	storage storage.ClientSecretsStorage,
 ) cli.Command {
 	// binary

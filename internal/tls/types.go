@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-type CredentialsProvider interface {
+type TLSProvider interface {
 	GetTransportCredentials() (credentials.TransportCredentials, error)
 	GetTlsConfig() (*tls.Config, error)
 }

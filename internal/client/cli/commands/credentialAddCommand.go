@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
-	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/generator"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/secret"
@@ -20,13 +19,13 @@ const (
 
 type credentialAddCommand struct {
 	*baseCommand
-	generator generator.Generator
+	generator identity.Generator
 	storage   storage.ClientSecretsStorage
 }
 
 func NewCredentialAddCommand(
 	stream io.CommandStream,
-	generator generator.Generator,
+	generator identity.Generator,
 	storage storage.ClientSecretsStorage,
 	children ...cli.Command,
 ) *credentialAddCommand {

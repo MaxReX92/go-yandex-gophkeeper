@@ -7,24 +7,24 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-type CertCredentialsProviderConfig interface {
+type CertTLSProviderConfig interface {
 	GetPublicCertPath() string
 	GetPrivateKeyPath() string
 }
 
-type certCredentialsProvider struct {
+type certTLSProvider struct {
 	publicCert string
 	privateKey string
 }
 
-func NewCredentialsProvider(conf CertCredentialsProviderConfig) *certCredentialsProvider {
-	return &certCredentialsProvider{
+func NewTLSProvider(conf CertTLSProviderConfig) *certTLSProvider {
+	return &certTLSProvider{
 		publicCert: conf.GetPublicCertPath(),
 		privateKey: conf.GetPrivateKeyPath(),
 	}
 }
 
-func (c *certCredentialsProvider) GetTransportCredentials() (credentials.TransportCredentials, error) {
+func (c *certTLSProvider) GetTransportCredentials() (credentials.TransportCredentials, error) {
 	cert, err := c.loadTlsCert()
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (c *certCredentialsProvider) GetTransportCredentials() (credentials.Transpo
 	}), nil
 }
 
-func (c *certCredentialsProvider) GetTlsConfig() (*tls.Config, error) {
+func (c *certTLSProvider) GetTlsConfig() (*tls.Config, error) {
 	cert, err := c.loadTlsCert()
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func (c *certCredentialsProvider) GetTlsConfig() (*tls.Config, error) {
 	return &tls.Config{Certificates: []tls.Certificate{*cert}}, nil
 }
 
-func (c *certCredentialsProvider) loadTlsCert() (*tls.Certificate, error) {
+func (c *certTLSProvider) loadTlsCert() (*tls.Certificate, error) {
 	cert, err := tls.LoadX509KeyPair(c.publicCert, c.privateKey)
 	if err != nil {
 		return nil, logger.WrapError("load certificate", err)

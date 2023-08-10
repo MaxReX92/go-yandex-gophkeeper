@@ -5,13 +5,13 @@ import (
 	"crypto/tls"
 	"sync"
 
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/db"
 	tlsCert "github.com/MaxReX92/go-yandex-gophkeeper/internal/tls"
 	"golang.org/x/sync/errgroup"
 	rpc "google.golang.org/grpc"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/generated"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/grpc"
-	"github.com/MaxReX92/go-yandex-gophkeeper/internal/server/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
@@ -22,29 +22,29 @@ type GrpcServerConfig interface {
 type grpcServer struct {
 	generated.UnimplementedSecretServiceServer
 
-	listenAddress       string
-	eventChannels       map[string][]chan *generated.SecretEvent
-	storage             storage.SecretsStorage
-	converter           *grpc.Converter
-	server              *rpc.Server
-	credentialsProvider tlsCert.CredentialsProvider
-	lock                sync.RWMutex
+	listenAddress string
+	eventChannels map[string][]chan *generated.SecretEvent
+	converter     *grpc.Converter
+	server        *rpc.Server
+	dbService     db.Service
+	tlsProvider   tlsCert.TLSProvider
+	lock          sync.RWMutex
 }
 
-func NewGrpcServer(conf GrpcServerConfig, storage storage.SecretsStorage, converter *grpc.Converter, credentialsProvider tlsCert.CredentialsProvider) *grpcServer {
+func NewGrpcServer(conf GrpcServerConfig, dbService db.Service, converter *grpc.Converter, tlsProvider tlsCert.TLSProvider) *grpcServer {
 	return &grpcServer{
-		listenAddress:       conf.GrpcAddress(),
-		eventChannels:       map[string][]chan *generated.SecretEvent{},
-		storage:             storage,
-		converter:           converter,
-		server:              rpc.NewServer(),
-		credentialsProvider: credentialsProvider,
-		lock:                sync.RWMutex{},
+		listenAddress: conf.GrpcAddress(),
+		eventChannels: map[string][]chan *generated.SecretEvent{},
+		dbService:     dbService,
+		converter:     converter,
+		server:        rpc.NewServer(),
+		tlsProvider:   tlsProvider,
+		lock:          sync.RWMutex{},
 	}
 }
 
 func (g *grpcServer) Start(_ context.Context) error {
-	tlsConfig, err := g.credentialsProvider.GetTlsConfig()
+	tlsConfig, err := g.tlsProvider.GetTlsConfig()
 	if err != nil {
 		return logger.WrapError("create tls config", err)
 	}
@@ -75,43 +75,66 @@ func (g *grpcServer) Ping(ctx context.Context, void *generated.Void) (*generated
 }
 
 func (g *grpcServer) AddSecret(ctx context.Context, request *generated.SecretRequest) (*generated.Void, error) {
-	err := g.storage.AddSecret(ctx, request.User.Identity, request.Secret)
-	if err != nil {
-		return nil, logger.WrapError("add secret", err)
-	}
+	err := g.dbService.CallInTransaction(ctx, func(ctx context.Context, executor db.Executor) error {
+		err := executor.AddSecret(ctx, request.User.Identity, request.Secret)
+		if err != nil {
+			return logger.WrapError("add secret", err)
+		}
 
-	g.writeToAllChannels(request.User.Identity, &generated.SecretEvent{
-		Type:   generated.EventType_ADD,
-		Secret: request.Secret,
+		g.writeToAllChannels(request.User.Identity, &generated.SecretEvent{
+			Type:   generated.EventType_ADD,
+			Secret: request.Secret,
+		})
+		return nil
 	})
+
+	if err != nil {
+		return nil, logger.WrapError("call add secret query", err)
+	}
 
 	return &generated.Void{}, nil
 }
 
 func (g *grpcServer) ChangeSecret(ctx context.Context, request *generated.SecretRequest) (*generated.Void, error) {
-	err := g.storage.ChangeSecret(ctx, request.User.Identity, request.Secret)
-	if err != nil {
-		return nil, logger.WrapError("change secret", err)
-	}
+	err := g.dbService.CallInTransaction(ctx, func(ctx context.Context, executor db.Executor) error {
+		err := executor.ChangeSecret(ctx, request.User.Identity, request.Secret)
+		if err != nil {
+			return logger.WrapError("change secret", err)
+		}
 
-	g.writeToAllChannels(request.User.Identity, &generated.SecretEvent{
-		Type:   generated.EventType_EDIT,
-		Secret: request.Secret,
+		g.writeToAllChannels(request.User.Identity, &generated.SecretEvent{
+			Type:   generated.EventType_EDIT,
+			Secret: request.Secret,
+		})
+
+		return nil
 	})
+
+	if err != nil {
+		return nil, logger.WrapError("call change secret query", err)
+	}
 
 	return &generated.Void{}, nil
 }
 
 func (g *grpcServer) RemoveSecret(ctx context.Context, request *generated.SecretRequest) (*generated.Void, error) {
-	err := g.storage.RemoveSecret(ctx, request.User.Identity, request.Secret)
-	if err != nil {
-		return nil, logger.WrapError("remove secret", err)
-	}
+	err := g.dbService.CallInTransaction(ctx, func(ctx context.Context, executor db.Executor) error {
+		err := executor.RemoveSecret(ctx, request.User.Identity, request.Secret)
+		if err != nil {
+			return logger.WrapError("remove secret", err)
+		}
 
-	g.writeToAllChannels(request.User.Identity, &generated.SecretEvent{
-		Type:   generated.EventType_REMOVE,
-		Secret: request.Secret,
+		g.writeToAllChannels(request.User.Identity, &generated.SecretEvent{
+			Type:   generated.EventType_REMOVE,
+			Secret: request.Secret,
+		})
+
+		return nil
 	})
+
+	if err != nil {
+		return nil, logger.WrapError("call remove secret query", err)
+	}
 
 	return &generated.Void{}, nil
 }
@@ -122,17 +145,30 @@ func (g *grpcServer) SecretEvents(user *generated.User, stream generated.SecretS
 	eg, ctx := errgroup.WithContext(stream.Context())
 
 	eg.Go(func() error {
-		currentSecrets, err := g.storage.GetAllSecrets(ctx, userID)
+		secretEvents, err := g.dbService.CallInTransactionResult(ctx, func(ctx context.Context, executor db.Executor) ([]any, error) {
+			dbSecrets, err := executor.GetAllSecrets(ctx, userID)
+			if err != nil {
+				return nil, logger.WrapError("load current secrets list", err)
+			}
+
+			secretsLen := len(dbSecrets)
+			events := make([]any, secretsLen)
+			for i := 0; i < secretsLen; i++ {
+				events[i] = &generated.SecretEvent{
+					Type:   generated.EventType_INITIAL,
+					Secret: dbSecrets[i],
+				}
+			}
+
+			return events, nil
+		})
+
 		if err != nil {
-			logger.ErrorFormat("failed to load current secrets list: %v", err)
-			return logger.WrapError("load current secrets list", err)
+			return logger.WrapError("call get all secrets query", err)
 		}
 
-		for _, currentSecret := range currentSecrets {
-			eventChannel <- &generated.SecretEvent{
-				Type:   generated.EventType_INITIAL,
-				Secret: currentSecret,
-			}
+		for _, secretEvent := range secretEvents {
+			eventChannel <- secretEvent.(*generated.SecretEvent)
 		}
 
 		return nil

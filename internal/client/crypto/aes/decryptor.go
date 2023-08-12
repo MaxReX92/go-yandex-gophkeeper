@@ -2,8 +2,10 @@ package aes
 
 import (
 	"crypto/aes"
+	"crypto/cipher"
+	"errors"
 
-	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/chunk"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/crypto"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
@@ -14,22 +16,23 @@ func NewDecryptor() *aesDecryptor {
 }
 
 func (r *aesDecryptor) Decrypt(bytes []byte, key []byte) ([]byte, error) {
-	blockSize := len(key)
-	aesblock, err := aes.NewCipher(key)
+	aesBlock, err := aes.NewCipher(key)
+	blockSize := aesBlock.BlockSize()
 	if err != nil {
 		return nil, logger.WrapError("create cipher", err)
 	}
 
-	var result []byte
-	for _, messageChunk := range chunk.SliceToChunks(bytes, blockSize) {
-		decryptedBlock := make([]byte, blockSize)
-		aesblock.Decrypt(decryptedBlock, messageChunk)
-
-		if err != nil {
-			return nil, logger.WrapError("decrypt message", err)
-		}
-		result = append(result, decryptedBlock...)
+	if len(bytes) < blockSize {
+		err = errors.New("Ciphertext block size is too short!")
+		return nil, logger.WrapError("create cipher", crypto.ErrTooShortBlock)
 	}
 
-	return result, nil
+	iv := bytes[:blockSize]
+	encrypted := bytes[blockSize:]
+	dectypted := make([]byte, len(encrypted))
+
+	stream := cipher.NewCFBDecrypter(aesBlock, iv)
+	stream.XORKeyStream(dectypted, encrypted)
+
+	return dectypted, nil
 }

@@ -90,13 +90,13 @@ func (c *Converter) FromModelEvent(modelEvent *model.SecretEvent, key string) (*
 }
 
 func (c *Converter) toModelSecret(generatedSecret *generated.Secret, key string, modelSecret model.Secret) (model.Secret, error) {
-	//decrypted, err := c.decryptor.Decrypt(generatedSecret.Content, []byte(key))
-	//if err != nil {
-	//	return nil, logger.WrapError("decrypt content", err)
-	//}
+	decrypted, err := c.decryptor.Decrypt(generatedSecret.Content, []byte(key))
+	if err != nil {
+		return nil, logger.WrapError("decrypt content", err)
+	}
 
-	// err = c.serializer.Deserialize(decrypted, modelSecret)
-	err := c.serializer.Deserialize(generatedSecret.Content, modelSecret)
+	err = c.serializer.Deserialize(decrypted, modelSecret)
+	//err := c.serializer.Deserialize(generatedSecret.Content, modelSecret)
 	if err != nil {
 		return nil, logger.WrapError("deserialize secret", err)
 	}
@@ -110,16 +110,16 @@ func (c *Converter) fromModelSecret(secret model.Secret, key string, secretType 
 		return nil, logger.WrapError("serialize secret", err)
 	}
 
-	//encrypted, err := c.encryptor.Encrypt(bytes, []byte(key))
-	//if err != nil {
-	//	return nil, logger.WrapError("encrypt content", err)
-	//}
+	encrypted, err := c.encryptor.Encrypt(bytes, []byte(key))
+	if err != nil {
+		return nil, logger.WrapError("encrypt content", err)
+	}
 
 	return &generated.Secret{
 		Identity: secret.GetIdentity(),
 		Type:     secretType,
-		// Content:  encrypted,
-		Content: bytes,
+		Content:  encrypted,
+		//Content: bytes,
 	}, nil
 }
 

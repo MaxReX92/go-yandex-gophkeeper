@@ -3,7 +3,6 @@ package aes
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"errors"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/crypto"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
@@ -23,7 +22,6 @@ func (r *aesDecryptor) Decrypt(bytes []byte, key []byte) ([]byte, error) {
 	}
 
 	if len(bytes) < blockSize {
-		err = errors.New("Ciphertext block size is too short!")
 		return nil, logger.WrapError("create cipher", crypto.ErrTooShortBlock)
 	}
 

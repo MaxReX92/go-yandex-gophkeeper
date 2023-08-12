@@ -4,15 +4,12 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"crypto/rsa"
 	"io"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
-type aesEncryptor struct {
-	publicKey *rsa.PublicKey
-}
+type aesEncryptor struct{}
 
 func NewEncryptor() *aesEncryptor {
 	return &aesEncryptor{}

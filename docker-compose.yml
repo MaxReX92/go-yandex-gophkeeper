@@ -1,9 +1,5 @@
 version: "3.9"
 
-x-common-variables: &common-variables
-  DATABASE_DSN: 'host=postgres user=postgres database=secrets password=postgres'
-  LISTEN_URL: 0.0.0.0:3200
-
 services:
   postgres:
     container_name: postgres_container
@@ -49,6 +45,32 @@ services:
           cpus: '0.5'
           memory: 512Mb
           
+  secret-auth:
+    container_name: auth_container
+    profiles:
+      - serviceee
+    image: auth:latest
+    depends_on:
+      - postgres
+    build:
+      context: ./
+      dockerfile: ./cmd/auth/Dockerfile
+    ports:
+      - "3201:3201"
+    volumes:
+      - ./credentials:/credentials
+    environment:
+      - DATABASE_DSN='host=postgres user=postgres database=secret password=postgres'
+      - CERT_PATH=/credentials/public.crt
+      - KEY_PATH=/credentials/private.crt
+    restart: unless-stopped
+    stop_signal: SIGINT
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 128Mb
+          
   secret-server:
     container_name: secret_server
     profiles:
@@ -61,8 +83,12 @@ services:
       dockerfile: ./cmd/server/Dockerfile
     ports:
       - "3200:3200"
+    volumes:
+      - ./credentials:/credentials
     environment:
-      <<: *common-variables
+      - DATABASE_DSN='host=postgres user=postgres database=secret password=postgres'
+      - CERT_PATH=/credentials/public.crt
+      - KEY_PATH=/credentials/private.crt
     restart: unless-stopped
     stop_signal: SIGINT
     deploy:

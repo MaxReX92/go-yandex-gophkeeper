@@ -28,6 +28,7 @@ type binaryEditCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewBinaryEditCommand creates a new instance of edit binary secret command.
 func NewBinaryEditCommand(
 	stream clientIO.CommandStream,
 	storage storage.ClientSecretsStorage,

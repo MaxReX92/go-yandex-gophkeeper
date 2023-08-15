@@ -10,6 +10,7 @@ import (
 
 type aesDecryptor struct{}
 
+// NewDecryptor creates a new instance of aes dectyptor.
 func NewDecryptor() *aesDecryptor {
 	return &aesDecryptor{}
 }

@@ -21,6 +21,7 @@ type registerCommand struct {
 	credentialsProvider auth.CredentialsProvider
 }
 
+// NewRegisterCommand creates a new instance of register user command.
 func NewRegisterCommand(
 	stream io.CommandStream,
 	credentialsProvider auth.CredentialsProvider,

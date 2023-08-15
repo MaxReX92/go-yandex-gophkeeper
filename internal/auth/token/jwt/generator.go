@@ -8,8 +8,11 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
+// JwtTokenGeneratorConfig contains required configuration for jwt token generator instance.
 type JwtTokenGeneratorConfig interface {
+	// SecretKey returns service crypto secret key.
 	SecretKey() []byte
+	// TokenTTL return generated token time-to-live.
 	TokenTTL() time.Duration
 }
 
@@ -18,6 +21,7 @@ type jwtTokenGenerator struct {
 	tokenTTL  time.Duration
 }
 
+// NewGenerator creates jwt token generator instance.
 func NewGenerator(conf JwtTokenGeneratorConfig) *jwtTokenGenerator {
 	return &jwtTokenGenerator{
 		secretKey: conf.SecretKey(),
@@ -25,6 +29,7 @@ func NewGenerator(conf JwtTokenGeneratorConfig) *jwtTokenGenerator {
 	}
 }
 
+// GenerateToken generate new jwt auth token.
 func (m *jwtTokenGenerator) GenerateToken() (string, error) {
 	now := time.Now()
 	claims := &jwt.RegisteredClaims{

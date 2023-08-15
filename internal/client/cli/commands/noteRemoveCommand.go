@@ -23,6 +23,7 @@ type noteRemoveCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewNoteRemoveCommand creates a new instance of remove note secret command.
 func NewNoteRemoveCommand(
 	stream io.CommandStream,
 	storage storage.ClientSecretsStorage,

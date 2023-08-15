@@ -26,6 +26,7 @@ type cardAddCommand struct {
 	storage   storage.ClientSecretsStorage
 }
 
+// NewCardAddCommand creates a new instance of add card secret command.
 func NewCardAddCommand(
 	stream io.CommandStream,
 	generator identity.Generator,

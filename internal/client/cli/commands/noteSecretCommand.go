@@ -20,6 +20,7 @@ type noteCommand struct {
 	*baseCommand
 }
 
+// NewNoteCommand creates a new instance of main note secret command.
 func NewNoteCommand(stream io.CommandStream, children ...cli.Command) *noteCommand {
 	command := &noteCommand{}
 	command.baseCommand = newBaseCommand(

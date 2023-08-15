@@ -24,6 +24,7 @@ type cardListCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewCardListCommand creates a new instance of list card secret command.
 func NewCardListCommand(stream io.CommandStream, storage storage.ClientSecretsStorage, children ...cli.Command) *cardListCommand {
 	command := &cardListCommand{
 		storage: storage,

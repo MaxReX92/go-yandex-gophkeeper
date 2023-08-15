@@ -2,6 +2,7 @@ package secret
 
 import "github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 
+// BaseSecret represent secret with base sign of secret.
 type BaseSecret struct {
 	Identity   string
 	SecretType model.SecretType

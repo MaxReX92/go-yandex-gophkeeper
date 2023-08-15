@@ -8,6 +8,7 @@ import (
 
 type jsonSerializer struct{}
 
+// NewSerializer creates a new instance of json secrets serializer instance.
 func NewSerializer() *jsonSerializer {
 	return &jsonSerializer{}
 }

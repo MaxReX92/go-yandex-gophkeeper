@@ -14,6 +14,7 @@ type memoryStorage struct {
 	lock    sync.RWMutex
 }
 
+// NewStorage creates a new instance of memory secrets storage.
 func NewStorage() *memoryStorage {
 	return &memoryStorage{
 		secrets: make(map[model.SecretType]map[string]model.Secret),

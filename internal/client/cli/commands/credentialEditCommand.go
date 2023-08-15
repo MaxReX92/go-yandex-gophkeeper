@@ -23,6 +23,7 @@ type credentialEditCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewCredentialEditCommand creates a new instance of edit credentials secret command.
 func NewCredentialEditCommand(
 	stream io.CommandStream,
 	storage storage.ClientSecretsStorage,

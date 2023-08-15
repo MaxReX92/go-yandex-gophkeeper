@@ -43,6 +43,7 @@ func Int64ToString(num int64) string {
 	return strconv.FormatInt(num, 10)
 }
 
+// ToTime convert string to time.
 func ToTime(str string) (time.Time, error) {
 	result, err := time.Parse("01/06", str)
 	if err != nil {

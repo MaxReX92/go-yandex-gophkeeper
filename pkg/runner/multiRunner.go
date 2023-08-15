@@ -10,6 +10,7 @@ type multiWorker struct {
 	runners []Runner
 }
 
+// NewMultiWorker creates a new instance of multi worker.
 func NewMultiWorker(runners ...Runner) *multiWorker {
 	return &multiWorker{
 		runners: runners,

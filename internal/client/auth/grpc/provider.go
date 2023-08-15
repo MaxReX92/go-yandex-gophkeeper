@@ -13,22 +13,26 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
-type GrpcServiceConfig interface {
+// GrpcCredentialsProviderConfig contains required configuration for grpc credentials provider instance.
+type GrpcCredentialsProviderConfig interface {
+	// AuthServerAddress returns auth server grpc address.
 	AuthServerAddress() string
+	// RenewTokenInterval returns interval for renew auth token.
 	RenewTokenInterval() time.Duration
 }
 
-type credentialsProvider struct {
+type grpcCredentialsProvider struct {
 	client             generated.AuthServiceClient
 	lock               sync.RWMutex
 	renewTokenInterval time.Duration
 	credentials        *auth.Credentials
 }
 
+// NewProvider creates a new instance of grpc credentials provider.
 func NewProvider(
-	conf GrpcServiceConfig,
+	conf GrpcCredentialsProviderConfig,
 	tlsProvider tls.TLSProvider,
-) (*credentialsProvider, error) {
+) (*grpcCredentialsProvider, error) {
 	transportCredentials, err := tlsProvider.GetTransportCredentials()
 	if err != nil {
 		return nil, logger.WrapError("load transport credentials", err)
@@ -39,14 +43,14 @@ func NewProvider(
 		return nil, logger.WrapError("open grpc connection", err)
 	}
 
-	return &credentialsProvider{
+	return &grpcCredentialsProvider{
 		client:             generated.NewAuthServiceClient(connection),
 		lock:               sync.RWMutex{},
 		renewTokenInterval: conf.RenewTokenInterval(),
 	}, nil
 }
 
-func (c *credentialsProvider) Start(ctx context.Context) error {
+func (c *grpcCredentialsProvider) Start(ctx context.Context) error {
 	ticker := time.NewTicker(c.renewTokenInterval)
 	for {
 		select {
@@ -71,7 +75,7 @@ func (c *credentialsProvider) Start(ctx context.Context) error {
 	}
 }
 
-func (c *credentialsProvider) GetCredentials() (*auth.Credentials, error) {
+func (c *grpcCredentialsProvider) GetCredentials() (*auth.Credentials, error) {
 	c.lock.RLock()
 	defer c.lock.RUnlock()
 
@@ -82,7 +86,7 @@ func (c *credentialsProvider) GetCredentials() (*auth.Credentials, error) {
 	return c.credentials, nil
 }
 
-func (c *credentialsProvider) Register(ctx context.Context, userName string, password string) error {
+func (c *grpcCredentialsProvider) Register(ctx context.Context, userName string, password string) error {
 	request := &generated.RegisterRequest{
 		Name:     userName,
 		Password: password,
@@ -97,7 +101,7 @@ func (c *credentialsProvider) Register(ctx context.Context, userName string, pas
 	return nil
 }
 
-func (c *credentialsProvider) Login(ctx context.Context, userName string, password string) error {
+func (c *grpcCredentialsProvider) Login(ctx context.Context, userName string, password string) error {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	if c.credentials != nil {

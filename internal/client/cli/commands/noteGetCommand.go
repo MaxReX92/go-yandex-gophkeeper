@@ -23,6 +23,7 @@ type noteGetCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewNoteGetCommand creates a new instance of get note secret command.
 func NewNoteGetCommand(stream io.CommandStream, storage storage.ClientSecretsStorage, children ...cli.Command) *noteGetCommand {
 	command := &noteGetCommand{
 		storage: storage,

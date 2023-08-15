@@ -1,4 +1,4 @@
-package io
+package std
 
 import (
 	"bufio"
@@ -12,6 +12,7 @@ type stream struct {
 	output *bufio.Writer
 }
 
+// NewIOStream creates a new instance of client std io command stream.
 func NewIOStream(input io.Reader, output io.Writer) *stream {
 	return &stream{
 		input:  bufio.NewScanner(input),

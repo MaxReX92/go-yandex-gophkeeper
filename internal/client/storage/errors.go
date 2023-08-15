@@ -3,6 +3,8 @@ package storage
 import "errors"
 
 var (
+	// ErrSecretAlreadyExist occurs if requested secret is already exists.
 	ErrSecretAlreadyExist = errors.New("secret already exist")
-	ErrSecretNotFound     = errors.New("secret not found")
+	// ErrSecretNotFound occurs if requested secret was not found.
+	ErrSecretNotFound = errors.New("secret not found")
 )

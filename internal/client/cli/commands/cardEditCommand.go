@@ -25,6 +25,7 @@ type cardEditCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewCardEditCommand creates a new instance of edit card secret command.
 func NewCardEditCommand(
 	stream io.CommandStream,
 	storage storage.ClientSecretsStorage,

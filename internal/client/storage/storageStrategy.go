@@ -12,6 +12,7 @@ type storageStrategy struct {
 	remoteStorage ClientSecretsStorage
 }
 
+// NewStorageStrategy creates a new storage strategy instance.
 func NewStorageStrategy(memoryStorage ClientSecretsStorage, remoteStorage ClientSecretsStorage) *storageStrategy {
 	return &storageStrategy{
 		memoryStorage: memoryStorage,

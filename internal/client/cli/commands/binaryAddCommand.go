@@ -30,6 +30,7 @@ type binaryAddCommand struct {
 	storage   storage.ClientSecretsStorage
 }
 
+// NewBinaryAddCommand creates a new instance of add binary secret command.
 func NewBinaryAddCommand(
 	stream clientIO.CommandStream,
 	generator identity.Generator,

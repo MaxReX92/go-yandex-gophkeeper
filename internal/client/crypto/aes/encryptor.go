@@ -11,6 +11,7 @@ import (
 
 type aesEncryptor struct{}
 
+// NewEncryptor creates a new instance of aes encryptor.
 func NewEncryptor() *aesEncryptor {
 	return &aesEncryptor{}
 }

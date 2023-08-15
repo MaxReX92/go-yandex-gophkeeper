@@ -24,6 +24,7 @@ type noteAddCommand struct {
 	storage   storage.ClientSecretsStorage
 }
 
+// NewNoteAddCommand creates a new instance of add note secret command.
 func NewNoteAddCommand(
 	stream io.CommandStream,
 	generator identity.Generator,

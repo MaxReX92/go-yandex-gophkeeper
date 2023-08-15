@@ -12,6 +12,7 @@ type remoteStorage struct {
 	service secret.Service
 }
 
+// NewStorage creates a new instance of remote secrets storage.
 func NewStorage(service secret.Service) *remoteStorage {
 	return &remoteStorage{
 		service: service,

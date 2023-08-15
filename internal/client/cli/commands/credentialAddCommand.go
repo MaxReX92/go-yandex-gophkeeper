@@ -24,6 +24,7 @@ type credentialAddCommand struct {
 	storage   storage.ClientSecretsStorage
 }
 
+// NewCredentialAddCommand creates a new instance of add credentials secret command.
 func NewCredentialAddCommand(
 	stream io.CommandStream,
 	generator identity.Generator,

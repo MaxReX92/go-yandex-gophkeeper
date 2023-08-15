@@ -8,6 +8,7 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
+// CertTLSProviderConfig contains required cert tls provider instance.
 type CertTLSProviderConfig interface {
 	GetPublicCertPath() string
 	GetPrivateKeyPath() string
@@ -18,6 +19,7 @@ type certTLSProvider struct {
 	privateKey string
 }
 
+// NewTLSProvider creates a new instance of cert tls provider.
 func NewTLSProvider(conf CertTLSProviderConfig) *certTLSProvider {
 	return &certTLSProvider{
 		publicCert: conf.GetPublicCertPath(),

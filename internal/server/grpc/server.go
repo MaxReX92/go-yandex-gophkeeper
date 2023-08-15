@@ -16,6 +16,7 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
+// GrpcServerConfig contains required configuration for grpc server instance.
 type GrpcServerConfig interface {
 	GrpcAddress() string
 }

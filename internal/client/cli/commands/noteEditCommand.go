@@ -23,6 +23,7 @@ type noteEditCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewNoteEditCommand creates a new instance of edit note secret command.
 func NewNoteEditCommand(
 	stream io.CommandStream,
 	storage storage.ClientSecretsStorage,

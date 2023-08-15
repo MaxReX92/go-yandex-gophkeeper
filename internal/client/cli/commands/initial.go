@@ -20,6 +20,7 @@ type initialCommand struct {
 	*baseCommand
 }
 
+// NewInitialCommand creates a new instance of main secret command.
 func NewInitialCommand(stream io.CommandStream, children ...cli.Command) *initialCommand {
 	command := &initialCommand{}
 	command.baseCommand = newBaseCommand(

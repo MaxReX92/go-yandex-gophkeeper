@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io/std"
 	"github.com/caarlos0/env/v7"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth"
@@ -64,7 +65,7 @@ func main() {
 	signal.Notify(interrupt, os.Interrupt)
 
 	// build app
-	ioStream := io.NewIOStream(os.Stdin, os.Stdout)
+	ioStream := std.NewIOStream(os.Stdin, os.Stdout)
 	randomGenerator := rand.NewGenerator(conf)
 	serializer := internalJson.NewSerializer()
 	encryptor := aes.NewEncryptor()
@@ -205,9 +206,6 @@ func buildCommands(
 		noteRemoveCommand,
 	)
 
-	// status
-	statusCommand := commands.NewStatusCommand(ioStream, commands.NewHelpCommand())
-
 	return commands.NewInitialCommand(
 		ioStream,
 		commands.NewHelpCommand(),
@@ -217,7 +215,6 @@ func buildCommands(
 		cardCommand,
 		credentialCommand,
 		noteCommand,
-		statusCommand,
 	)
 }
 

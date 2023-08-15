@@ -11,12 +11,3 @@ func ArrayToChan[T any](items []T) <-chan T {
 
 	return result
 }
-
-func ChanToArray[T any](items <-chan T) []T {
-	result := []T{}
-	for item := range items {
-		result = append(result, item)
-	}
-
-	return result
-}

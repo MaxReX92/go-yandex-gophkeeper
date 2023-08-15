@@ -17,7 +17,7 @@ import (
 
 const (
 	binaryGetCommandName      = "get"
-	binaryGetShortDescription = "get of all binaries"
+	binaryGetShortDescription = "get binary secret"
 	binaryGetFullDescription  = "Command get all stored binaries,"
 )
 

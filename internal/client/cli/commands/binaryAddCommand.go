@@ -19,8 +19,8 @@ import (
 
 const (
 	binaryAddCommandName                  = "add"
-	binaryAddShortDescription             = "add binary to store"
-	binaryAddFullDescription              = "Add new binary to secure store,"
+	binaryAddShortDescription             = "add binary secret"
+	binaryAddFullDescription              = "Add new binary secret to secure store,"
 	fileMode                  os.FileMode = 0o644
 )
 

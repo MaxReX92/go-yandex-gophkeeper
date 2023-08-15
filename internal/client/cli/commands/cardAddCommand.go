@@ -16,8 +16,8 @@ import (
 
 const (
 	cardAddCommandName      = "add"
-	cardAddShortDescription = "add card to store"
-	cardAddFullDescription  = "Add new card to secure store,"
+	cardAddShortDescription = "add card secret"
+	cardAddFullDescription  = "Add new card secret to secure store,"
 )
 
 type cardAddCommand struct {

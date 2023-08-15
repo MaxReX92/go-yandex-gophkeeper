@@ -14,8 +14,8 @@ import (
 
 const (
 	noteAddCommandName      = "add"
-	noteAddShortDescription = "add note to store"
-	noteAddFullDescription  = "Add new note to secure store,"
+	noteAddShortDescription = "add note secret"
+	noteAddFullDescription  = "Add new note secret to secure store."
 )
 
 type noteAddCommand struct {

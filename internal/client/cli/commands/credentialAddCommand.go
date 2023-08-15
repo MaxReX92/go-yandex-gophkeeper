@@ -14,8 +14,8 @@ import (
 
 const (
 	credentialAddCommandName      = "add"
-	credentialAddShortDescription = "add credential to store"
-	credentialAddFullDescription  = "Add new credential to secure store,"
+	credentialAddShortDescription = "add credential secret"
+	credentialAddFullDescription  = "Add new credential secret to secure store,"
 )
 
 type credentialAddCommand struct {

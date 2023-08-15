@@ -16,8 +16,8 @@ import (
 
 const (
 	cardEditCommandName      = "edit"
-	cardEditShortDescription = "edit card from store"
-	cardEditFullDescription  = "Edit card from secure store,"
+	cardEditShortDescription = "edit card secret"
+	cardEditFullDescription  = "Edit card secret from secure store,"
 )
 
 type cardEditCommand struct {

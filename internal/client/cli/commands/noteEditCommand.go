@@ -14,8 +14,8 @@ import (
 
 const (
 	noteEditCommandName      = "edit"
-	noteEditShortDescription = "edit note from store"
-	noteEditFullDescription  = "Edit new note from secure store,"
+	noteEditShortDescription = "edit note secret"
+	noteEditFullDescription  = "Edit note secret from secure store."
 )
 
 type noteEditCommand struct {

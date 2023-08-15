@@ -8,6 +8,7 @@ import (
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
+	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
 type baseCommand struct {
@@ -76,8 +77,8 @@ func (c *baseCommand) SetParent(command cli.Command) {
 
 func (c *baseCommand) Invoke(ctx context.Context, keys []string) error {
 	args := make(map[string]string)
-	keysLenhth := len(keys)
-	if keysLenhth == 0 {
+	keysLength := len(keys)
+	if keysLength == 0 {
 		return c.invokeMethod(ctx, args)
 	}
 
@@ -85,20 +86,18 @@ func (c *baseCommand) Invoke(ctx context.Context, keys []string) error {
 		return childCommand.Invoke(ctx, keys[1:])
 	}
 
-	for i := 0; i < keysLenhth; i++ {
+	for i := 0; i < keysLength; i++ {
 		key := keys[i]
 		arg, ok := c.args[key]
 		if !ok {
-			c.stream.Write(fmt.Sprintf("Unexpected argument: %s. See '%s help'.\n", key, c.FullName()))
-			return nil
+			return logger.WrapError(fmt.Sprintf("parse unexpected key: %s", key), cli.ErrInvalidArguments)
 		}
 
 		var value string
 		if arg.NextArgIsValue() {
 			i++
-			if i > keysLenhth {
-				c.stream.Write(fmt.Sprintf("Argument value missed: %s. See '%s help'.\n", key, c.FullName()))
-				return nil
+			if i > keysLength {
+				return logger.WrapError(fmt.Sprintf("get argument value: %s", key), cli.ErrInvalidArguments)
 			}
 
 			value = keys[i]

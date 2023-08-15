@@ -6,7 +6,7 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 )
 
-// Service implements logic for working with secrets
+// Service implements logic for working with secrets.
 type Service interface {
 	// AddSecret add new secret to secret storage.
 	AddSecret(ctx context.Context, secret model.Secret) error

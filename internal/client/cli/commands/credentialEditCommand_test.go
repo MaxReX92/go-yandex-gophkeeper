@@ -2,23 +2,24 @@ package commands
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/secret"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/test"
 )
 
 func TestNewCredentialEditCommand_CommonChecks(t *testing.T) {
 	ctx := context.Background()
-	childCommandName := "childCommand"
-	childCommandDescription := "childDescription"
+	const childCommandName = "childCommand"
+	const childCommandDescription = "childDescription"
 	keys := []string{childCommandName}
 
 	stream := new(io.CommandStreamMock)
@@ -48,10 +49,10 @@ func TestNewCredentialEditCommand_CommonChecks(t *testing.T) {
 
 func TestNewCredentialEditCommand_Invoke(t *testing.T) {
 	ctx := context.Background()
-	secretIdentity := "secretIdentity"
+	const secretIdentity = "secretIdentity"
 	secretUser := "secretUser"
 	secretPass := "secretPass"
-	secretComment := "secretComment"
+	const secretComment = "secretComment"
 
 	tests := []struct {
 		name             string
@@ -93,12 +94,12 @@ func TestNewCredentialEditCommand_Invoke(t *testing.T) {
 		}, {
 			name:            "storage_get_error",
 			keys:            []string{"-id", secretIdentity, "-u", secretUser, "-p", secretPass},
-			storageGetError: errors.New("test error message"),
+			storageGetError: test.ErrTest,
 			expectedError:   "failed to get secret: test error message",
 		}, {
 			name:             "storage_add_error",
 			keys:             []string{"-id", secretIdentity, "-u", secretUser, "-p", secretPass},
-			storageEditError: errors.New("test error message"),
+			storageEditError: test.ErrTest,
 			expectedError:    "failed to edit secret: test error message",
 		},
 	}

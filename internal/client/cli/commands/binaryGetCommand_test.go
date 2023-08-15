@@ -3,23 +3,24 @@ package commands
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/secret"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/test"
 )
 
 func TestNewBinaryGetCommand_CommonChecks(t *testing.T) {
 	ctx := context.Background()
-	childCommandName := "childCommand"
-	childCommandDescription := "childDescription"
+	const childCommandName = "childCommand"
+	const childCommandDescription = "childDescription"
 	keys := []string{childCommandName}
 
 	stream := new(io.CommandStreamMock)
@@ -49,7 +50,7 @@ func TestNewBinaryGetCommand_CommonChecks(t *testing.T) {
 
 func TestNewBinaryGetCommand_Invoke(t *testing.T) {
 	ctx := context.Background()
-	secretIdentity := "secretIdentity"
+	const secretIdentity = "secretIdentity"
 	tests := []struct {
 		name            string
 		keys            []string
@@ -80,7 +81,7 @@ func TestNewBinaryGetCommand_Invoke(t *testing.T) {
 		}, {
 			name:            "storage_get_error",
 			keys:            []string{"-id", secretIdentity},
-			storageGetError: errors.New("test error message"),
+			storageGetError: test.ErrTest,
 			expectedError:   "failed to get binary secret: test error message",
 		},
 	}

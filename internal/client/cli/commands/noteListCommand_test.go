@@ -2,23 +2,24 @@ package commands
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/secret"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/test"
 )
 
 func TestNewNoteListCommand_CommonChecks(t *testing.T) {
 	ctx := context.Background()
-	childCommandName := "childCommand"
-	childCommandDescription := "childDescription"
+	const childCommandName = "childCommand"
+	const childCommandDescription = "childDescription"
 	keys := []string{childCommandName}
 
 	stream := new(io.CommandStreamMock)
@@ -83,7 +84,7 @@ func TestNewNoteListCommand_Invoke(t *testing.T) {
 		}, {
 			name:            "storage_list_error",
 			keys:            []string{},
-			storageGetError: errors.New("test error message"),
+			storageGetError: test.ErrTest,
 			expectedError:   "failed to get secrets: test error message",
 		},
 	}

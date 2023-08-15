@@ -2,9 +2,11 @@ package commands
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
@@ -12,15 +14,14 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/identity"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/secret"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/test"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/parser"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func TestNewCardAddCommand_CommonChecks(t *testing.T) {
 	ctx := context.Background()
-	childCommandName := "childCommand"
-	childCommandDescription := "childDescription"
+	const childCommandName = "childCommand"
+	const childCommandDescription = "childDescription"
 	keys := []string{childCommandName}
 
 	stream := new(io.CommandStreamMock)
@@ -51,11 +52,11 @@ func TestNewCardAddCommand_CommonChecks(t *testing.T) {
 
 func TestNewCardAddCommand_Invoke(t *testing.T) {
 	ctx := context.Background()
-	secretIdentity := "secretIdentity"
+	const secretIdentity = "secretIdentity"
 	secretNumber := "secretNumber"
 	secretCVV := "123"
 	secretValid := "04/25"
-	secretComment := "secretComment"
+	const secretComment = "secretComment"
 
 	tests := []struct {
 		name            string
@@ -102,7 +103,7 @@ func TestNewCardAddCommand_Invoke(t *testing.T) {
 		}, {
 			name:          "storage_error",
 			keys:          []string{"-n", secretNumber, "--cvv", secretCVV, "-v", secretValid},
-			storageError:  errors.New("test error message"),
+			storageError:  test.ErrTest,
 			expectedError: "failed to add secret: test error message",
 		},
 	}

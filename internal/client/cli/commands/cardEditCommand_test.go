@@ -2,25 +2,26 @@ package commands
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/secret"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/test"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/parser"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func TestNewCardEditCommand_CommonChecks(t *testing.T) {
 	ctx := context.Background()
-	childCommandName := "childCommand"
-	childCommandDescription := "childDescription"
+	const childCommandName = "childCommand"
+	const childCommandDescription = "childDescription"
 	keys := []string{childCommandName}
 
 	stream := new(io.CommandStreamMock)
@@ -50,11 +51,11 @@ func TestNewCardEditCommand_CommonChecks(t *testing.T) {
 
 func TestNewCardEditCommand_Invoke(t *testing.T) {
 	ctx := context.Background()
-	secretIdentity := "secretIdentity"
+	const secretIdentity = "secretIdentity"
 	secretNum := "secretNum"
 	secretCVV := 123
 	secretValid, _ := parser.ToTime("04/25")
-	secretComment := "secretComment"
+	const secretComment = "secretComment"
 
 	tests := []struct {
 		name             string
@@ -96,12 +97,12 @@ func TestNewCardEditCommand_Invoke(t *testing.T) {
 		}, {
 			name:            "storage_get_error",
 			keys:            []string{"-id", secretIdentity, "-n", secretNum, "--cvv", "123", "-v", "04/25"},
-			storageGetError: errors.New("test error message"),
+			storageGetError: test.ErrTest,
 			expectedError:   "failed to get secret: test error message",
 		}, {
 			name:             "storage_add_error",
 			keys:             []string{"-id", secretIdentity, "-n", secretNum, "--cvv", "123", "-v", "04/25"},
-			storageEditError: errors.New("test error message"),
+			storageEditError: test.ErrTest,
 			expectedError:    "failed to edit secret: test error message",
 		},
 	}

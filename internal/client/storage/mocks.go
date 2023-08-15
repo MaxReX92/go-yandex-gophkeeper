@@ -3,8 +3,9 @@ package storage
 import (
 	"context"
 
-	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 )
 
 type ClientSecretsStorageMock struct {

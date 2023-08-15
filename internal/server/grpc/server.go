@@ -9,10 +9,9 @@ import (
 	rpc "google.golang.org/grpc"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/db"
-	tlsCert "github.com/MaxReX92/go-yandex-gophkeeper/internal/tls"
-
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/generated"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model/grpc"
+	tlsCert "github.com/MaxReX92/go-yandex-gophkeeper/internal/tls"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 

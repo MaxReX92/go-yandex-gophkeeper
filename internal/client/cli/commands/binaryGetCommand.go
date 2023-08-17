@@ -17,7 +17,7 @@ import (
 
 const (
 	binaryGetCommandName      = "get"
-	binaryGetShortDescription = "get of all binaries"
+	binaryGetShortDescription = "get binary secret"
 	binaryGetFullDescription  = "Command get all stored binaries,"
 )
 
@@ -26,6 +26,7 @@ type binaryGetCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewBinaryGetCommand creates a new instance of get binary secret command.
 func NewBinaryGetCommand(stream clientIO.CommandStream, storage storage.ClientSecretsStorage, children ...cli.Command) *binaryGetCommand {
 	command := &binaryGetCommand{
 		storage: storage,

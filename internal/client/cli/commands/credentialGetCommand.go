@@ -23,6 +23,7 @@ type credentialGetCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewCredentialGetCommand creates a new instance of get credentials secret command.
 func NewCredentialGetCommand(stream io.CommandStream, storage storage.ClientSecretsStorage, children ...cli.Command) *credentialGetCommand {
 	command := &credentialGetCommand{
 		storage: storage,

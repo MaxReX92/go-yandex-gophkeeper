@@ -10,21 +10,21 @@ import (
 	"github.com/caarlos0/env/v7"
 
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth"
-	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/crypto/aes"
-	serviceGrpc "github.com/MaxReX92/go-yandex-gophkeeper/internal/client/secret/grpc"
-	"github.com/MaxReX92/go-yandex-gophkeeper/internal/identity"
-	"github.com/MaxReX92/go-yandex-gophkeeper/internal/identity/rand"
-	"github.com/MaxReX92/go-yandex-gophkeeper/internal/tls/cert"
-
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/auth/grpc"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/cli/commands"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/crypto/aes"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/io/std"
+	serviceGrpc "github.com/MaxReX92/go-yandex-gophkeeper/internal/client/secret/grpc"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage/memory"
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/client/storage/remote"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/identity"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/identity/rand"
 	modelGrpc "github.com/MaxReX92/go-yandex-gophkeeper/internal/model/grpc"
 	internalJson "github.com/MaxReX92/go-yandex-gophkeeper/internal/serialization/json"
+	"github.com/MaxReX92/go-yandex-gophkeeper/internal/tls/cert"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/runner"
 )
@@ -64,7 +64,7 @@ func main() {
 	signal.Notify(interrupt, os.Interrupt)
 
 	// build app
-	ioStream := io.NewIOStream(os.Stdin, os.Stdout)
+	ioStream := std.NewIOStream(os.Stdin, os.Stdout)
 	randomGenerator := rand.NewGenerator(conf)
 	serializer := internalJson.NewSerializer()
 	encryptor := aes.NewEncryptor()
@@ -205,9 +205,6 @@ func buildCommands(
 		noteRemoveCommand,
 	)
 
-	// status
-	statusCommand := commands.NewStatusCommand(ioStream, commands.NewHelpCommand())
-
 	return commands.NewInitialCommand(
 		ioStream,
 		commands.NewHelpCommand(),
@@ -217,7 +214,6 @@ func buildCommands(
 		cardCommand,
 		credentialCommand,
 		noteCommand,
-		statusCommand,
 	)
 }
 

@@ -2,7 +2,5 @@ package crypto
 
 import "errors"
 
-var (
-	ErrInvalidKey    = errors.New("invalid key")
-	ErrTooShortBlock = errors.New("too short block")
-)
+// ErrTooShortBlock occurs if encryptor block size is too short.
+var ErrTooShortBlock = errors.New("too short block")

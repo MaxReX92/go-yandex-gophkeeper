@@ -12,6 +12,7 @@ type helpCommand struct {
 	parent cli.Command
 }
 
+// NewHelpCommand creates a new instance of help command.
 func NewHelpCommand() *helpCommand {
 	return &helpCommand{
 		name: "help",

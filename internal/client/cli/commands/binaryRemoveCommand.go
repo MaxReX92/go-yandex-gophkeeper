@@ -23,6 +23,7 @@ type binaryRemoveCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewBinaryRemoveCommand creates a new instance of remove binary secret command.
 func NewBinaryRemoveCommand(
 	stream io.CommandStream,
 	storage storage.ClientSecretsStorage,

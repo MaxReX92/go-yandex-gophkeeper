@@ -14,8 +14,8 @@ import (
 
 const (
 	credentialAddCommandName      = "add"
-	credentialAddShortDescription = "add credential to store"
-	credentialAddFullDescription  = "Add new credential to secure store,"
+	credentialAddShortDescription = "add credential secret"
+	credentialAddFullDescription  = "Add new credential secret to secure store,"
 )
 
 type credentialAddCommand struct {
@@ -24,6 +24,7 @@ type credentialAddCommand struct {
 	storage   storage.ClientSecretsStorage
 }
 
+// NewCredentialAddCommand creates a new instance of add credentials secret command.
 func NewCredentialAddCommand(
 	stream io.CommandStream,
 	generator identity.Generator,

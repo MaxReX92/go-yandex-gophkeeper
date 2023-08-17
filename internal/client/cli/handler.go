@@ -15,6 +15,7 @@ type handler struct {
 	initialCommand Command
 }
 
+// NewHandler creates a new instance of cli command handler.
 func NewHandler(ioStream io.CommandStream, initialCommand Command) *handler {
 	return &handler{
 		ioStream:       ioStream,

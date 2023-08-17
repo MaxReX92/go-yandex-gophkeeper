@@ -11,12 +11,14 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
+// Converter provides converter methods between generated and native models.
 type Converter struct {
 	serializer serialization.Serializer
 	encryptor  crypto.Encryptor
 	decryptor  crypto.Decryptor
 }
 
+// NewConverter creates a new instance of converter.
 func NewConverter(serializer serialization.Serializer, encryptor crypto.Encryptor, decryptor crypto.Decryptor) *Converter {
 	return &Converter{
 		serializer: serializer,
@@ -25,6 +27,7 @@ func NewConverter(serializer serialization.Serializer, encryptor crypto.Encrypto
 	}
 }
 
+// ToModelSecret convert generated secret to native model secret.
 func (c *Converter) ToModelSecret(generatedSecret *generated.Secret, key string) (model.Secret, error) {
 	secretType := generatedSecret.Type
 	switch secretType {
@@ -41,6 +44,7 @@ func (c *Converter) ToModelSecret(generatedSecret *generated.Secret, key string)
 	}
 }
 
+// FromModelSecret convert native model secret to generated secret.
 func (c *Converter) FromModelSecret(modelSecret model.Secret, key string) (*generated.Secret, error) {
 	secretType := modelSecret.GetType()
 	switch secretType {
@@ -57,6 +61,7 @@ func (c *Converter) FromModelSecret(modelSecret model.Secret, key string) (*gene
 	}
 }
 
+// ToModelEvent convert generated event to native model event.
 func (c *Converter) ToModelEvent(generatedEvent *generated.SecretEvent, key string) (*model.SecretEvent, error) {
 	secretType := generatedEvent.Type
 	switch secretType {
@@ -73,6 +78,7 @@ func (c *Converter) ToModelEvent(generatedEvent *generated.SecretEvent, key stri
 	}
 }
 
+// FromModelEvent convert native model event to generated event.
 func (c *Converter) FromModelEvent(modelEvent *model.SecretEvent, key string) (*generated.SecretEvent, error) {
 	secretType := modelEvent.Type
 	switch secretType {

@@ -14,8 +14,8 @@ import (
 
 const (
 	noteEditCommandName      = "edit"
-	noteEditShortDescription = "edit note from store"
-	noteEditFullDescription  = "Edit new note from secure store,"
+	noteEditShortDescription = "edit note secret"
+	noteEditFullDescription  = "Edit note secret from secure store."
 )
 
 type noteEditCommand struct {
@@ -23,6 +23,7 @@ type noteEditCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewNoteEditCommand creates a new instance of edit note secret command.
 func NewNoteEditCommand(
 	stream io.CommandStream,
 	storage storage.ClientSecretsStorage,

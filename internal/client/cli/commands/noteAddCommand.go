@@ -14,8 +14,8 @@ import (
 
 const (
 	noteAddCommandName      = "add"
-	noteAddShortDescription = "add note to store"
-	noteAddFullDescription  = "Add new note to secure store,"
+	noteAddShortDescription = "add note secret"
+	noteAddFullDescription  = "Add new note secret to secure store."
 )
 
 type noteAddCommand struct {
@@ -24,6 +24,7 @@ type noteAddCommand struct {
 	storage   storage.ClientSecretsStorage
 }
 
+// NewNoteAddCommand creates a new instance of add note secret command.
 func NewNoteAddCommand(
 	stream io.CommandStream,
 	generator identity.Generator,

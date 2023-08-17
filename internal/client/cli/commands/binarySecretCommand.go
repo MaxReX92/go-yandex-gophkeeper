@@ -20,6 +20,7 @@ type binaryCommand struct {
 	*baseCommand
 }
 
+// NewBinaryCommand creates a new instance of main binary secret command.
 func NewBinaryCommand(stream io.CommandStream, children ...cli.Command) *binaryCommand {
 	command := &binaryCommand{}
 	command.baseCommand = newBaseCommand(

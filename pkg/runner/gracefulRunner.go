@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// GracefulRunner implement logic for correct graceful shutdown services.
 type GracefulRunner struct {
 	starter Runner
 	stopper Stopper
@@ -13,6 +14,7 @@ type GracefulRunner struct {
 	err     chan error
 }
 
+// NewGracefulRunner creates a new instance of GracefulRunner.
 func NewGracefulRunner(runner Runner) *GracefulRunner {
 	gr := &GracefulRunner{
 		starter: runner,
@@ -29,6 +31,7 @@ func NewGracefulRunner(runner Runner) *GracefulRunner {
 	return gr
 }
 
+// Start begin service useful work.
 func (gr *GracefulRunner) Start(ctx context.Context) {
 	stopCtx, cancel := context.WithCancel(ctx)
 
@@ -43,6 +46,7 @@ func (gr *GracefulRunner) Start(ctx context.Context) {
 	}()
 }
 
+// Stop send shutdown signal for underlying service.
 func (gr *GracefulRunner) Stop(ctx context.Context) error {
 	close(gr.done)
 

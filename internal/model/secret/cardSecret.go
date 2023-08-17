@@ -6,6 +6,7 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/internal/model"
 )
 
+// CardSecret represent a card secret.
 type CardSecret struct {
 	*BaseSecret
 
@@ -14,6 +15,7 @@ type CardSecret struct {
 	Valid  time.Time
 }
 
+// NewCardSecret creates a new instance of card secret.
 func NewCardSecret(number string, cvv int32, valid time.Time, identity string, comment string) *CardSecret {
 	return &CardSecret{
 		BaseSecret: newBaseSecret(identity, model.Card, comment),

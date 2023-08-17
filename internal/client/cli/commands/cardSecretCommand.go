@@ -21,6 +21,7 @@ type cardCommand struct {
 	*baseCommand
 }
 
+// NewCardCommand creates a new instance of main card secret command.
 func NewCardCommand(stream io.CommandStream, children ...cli.Command) *cardCommand {
 	command := &cardCommand{}
 	command.baseCommand = newBaseCommand(

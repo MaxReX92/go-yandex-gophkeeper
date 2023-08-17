@@ -23,6 +23,7 @@ type credentialListCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewCredentialListCommand creates a new instance of list credentials secret command.
 func NewCredentialListCommand(stream io.CommandStream, storage storage.ClientSecretsStorage, children ...cli.Command) *credentialListCommand {
 	command := &credentialListCommand{
 		storage: storage,

@@ -23,6 +23,7 @@ type noteListCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewNoteListCommand creates a new instance of list note secret command.
 func NewNoteListCommand(stream io.CommandStream, storage storage.ClientSecretsStorage, children ...cli.Command) *noteListCommand {
 	command := &noteListCommand{
 		storage: storage,

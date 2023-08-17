@@ -16,8 +16,8 @@ import (
 
 const (
 	cardEditCommandName      = "edit"
-	cardEditShortDescription = "edit card from store"
-	cardEditFullDescription  = "Edit card from secure store,"
+	cardEditShortDescription = "edit card secret"
+	cardEditFullDescription  = "Edit card secret from secure store,"
 )
 
 type cardEditCommand struct {
@@ -25,6 +25,7 @@ type cardEditCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewCardEditCommand creates a new instance of edit card secret command.
 func NewCardEditCommand(
 	stream io.CommandStream,
 	storage storage.ClientSecretsStorage,

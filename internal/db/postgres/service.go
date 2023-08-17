@@ -10,6 +10,7 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
+// PostgresDBServiceConfig contains required configuration for postgres db service.
 type PostgresDBServiceConfig interface {
 	ConnectionString() string
 }

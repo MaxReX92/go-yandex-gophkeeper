@@ -23,6 +23,7 @@ type cardRemoveCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewCardRemoveCommand creates a new instance of remove card secret command.
 func NewCardRemoveCommand(
 	stream io.CommandStream,
 	storage storage.ClientSecretsStorage,

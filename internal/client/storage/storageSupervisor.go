@@ -14,6 +14,7 @@ type storageSupervisor struct {
 	memoryStorage ClientSecretsStorage
 }
 
+// NewStorageSupervisor creates a new storage strategy instance.
 func NewStorageSupervisor(service secret.Service, memoryStorage ClientSecretsStorage) *storageSupervisor {
 	return &storageSupervisor{
 		service:       service,

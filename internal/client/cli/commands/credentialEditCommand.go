@@ -14,8 +14,8 @@ import (
 
 const (
 	credentialEditCommandName      = "edit"
-	credentialEditShortDescription = "edit credential from store"
-	credentialEditFullDescription  = "Edit credential from secure store,"
+	credentialEditShortDescription = "edit credential secret"
+	credentialEditFullDescription  = "Edit credential secret from secure store."
 )
 
 type credentialEditCommand struct {
@@ -23,6 +23,7 @@ type credentialEditCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewCredentialEditCommand creates a new instance of edit credentials secret command.
 func NewCredentialEditCommand(
 	stream io.CommandStream,
 	storage storage.ClientSecretsStorage,

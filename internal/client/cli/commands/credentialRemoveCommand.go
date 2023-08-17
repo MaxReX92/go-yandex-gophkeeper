@@ -23,6 +23,7 @@ type credentialRemoveCommand struct {
 	storage storage.ClientSecretsStorage
 }
 
+// NewCredentialRemoveCommand creates a new instance of remove credentials secret command.
 func NewCredentialRemoveCommand(
 	stream io.CommandStream,
 	storage storage.ClientSecretsStorage,

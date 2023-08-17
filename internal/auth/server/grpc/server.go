@@ -16,7 +16,9 @@ import (
 	"github.com/MaxReX92/go-yandex-gophkeeper/pkg/logger"
 )
 
+// GrpcServerConfig contains required configuration for grpc server instance.
 type GrpcServerConfig interface {
+	// GrpcAddress returns grpc service listen address.
 	GrpcAddress() string
 }
 
@@ -32,6 +34,7 @@ type grpcServer struct {
 	identityGenerator identity.Generator
 }
 
+// NewServer creates a grpc server instance.
 func NewServer(
 	conf GrpcServerConfig,
 	dbService db.Service,

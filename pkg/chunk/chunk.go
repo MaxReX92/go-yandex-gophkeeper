@@ -1,5 +1,6 @@
 package chunk
 
+// SliceToChunks separate slice to chunks with chunkSize max size.
 func SliceToChunks[T any](array []T, chunkSize int) [][]T {
 	var result [][]T
 	arrayLen := len(array)
@@ -14,6 +15,7 @@ func SliceToChunks[T any](array []T, chunkSize int) [][]T {
 	return result
 }
 
+// ChanToChunks separate chan array to chunks with chunkSize max size.
 func ChanToChunks[T any](ch <-chan T, chunkSize int) [][]T {
 	var result [][]T //nolint:prealloc
 	var chunk []T    //nolint:prealloc

@@ -21,6 +21,7 @@ type credentialCommand struct {
 	*baseCommand
 }
 
+// NewCredentialCommand creates a new instance of main credentials secret command.
 func NewCredentialCommand(stream io.CommandStream, children ...cli.Command) *credentialCommand {
 	command := &credentialCommand{}
 	command.baseCommand = newBaseCommand(
